@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct TBGB_ControlApp: App {
+    
+    @StateObject var viewModel = LetterModel()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(viewModel)
         }
     }
 }

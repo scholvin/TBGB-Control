@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B921AB6E281EE13D007D83DC /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = B921AB6D281EE13D007D83DC /* Grid.swift */; };
+		B921AB70281EE4A1007D83DC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B921AB6F281EE4A1007D83DC /* Constants.swift */; };
 		B93B483F2810E40B0073FF6E /* TBGB_ControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B483E2810E40B0073FF6E /* TBGB_ControlApp.swift */; };
 		B93B48412810E40B0073FF6E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B48402810E40B0073FF6E /* ContentView.swift */; };
 		B93B48432810E40C0073FF6E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B93B48422810E40C0073FF6E /* Assets.xcassets */; };
@@ -14,6 +16,7 @@
 		B93B48502810E40D0073FF6E /* TBGB_ControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B484F2810E40D0073FF6E /* TBGB_ControlTests.swift */; };
 		B93B485A2810E40D0073FF6E /* TBGB_ControlUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B48592810E40D0073FF6E /* TBGB_ControlUITests.swift */; };
 		B93B485C2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B485B2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift */; };
+		B9EE0EAC281B48D600DDAA23 /* LetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B921AB6D281EE13D007D83DC /* Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
+		B921AB6F281EE4A1007D83DC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B93B483B2810E40B0073FF6E /* TBGB Control.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TBGB Control.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B93B483E2810E40B0073FF6E /* TBGB_ControlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBGB_ControlApp.swift; sourceTree = "<group>"; };
 		B93B48402810E40B0073FF6E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -44,6 +49,8 @@
 		B93B48552810E40D0073FF6E /* TBGB ControlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TBGB ControlUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B93B48592810E40D0073FF6E /* TBGB_ControlUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBGB_ControlUITests.swift; sourceTree = "<group>"; };
 		B93B485B2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBGB_ControlUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B93B48682810E6750073FF6E /* TBGB-Control-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "TBGB-Control-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +101,10 @@
 		B93B483D2810E40B0073FF6E /* TBGB Control */ = {
 			isa = PBXGroup;
 			children = (
+				B9EE0EAE281B512200DDAA23 /* Models */,
+				B9EE0EAD281B497200DDAA23 /* Views */,
+				B93B48682810E6750073FF6E /* TBGB-Control-Info.plist */,
 				B93B483E2810E40B0073FF6E /* TBGB_ControlApp.swift */,
-				B93B48402810E40B0073FF6E /* ContentView.swift */,
 				B93B48422810E40C0073FF6E /* Assets.xcassets */,
 				B93B48442810E40C0073FF6E /* Preview Content */,
 			);
@@ -125,6 +134,24 @@
 				B93B485B2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift */,
 			);
 			path = "TBGB ControlUITests";
+			sourceTree = "<group>";
+		};
+		B9EE0EAD281B497200DDAA23 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B93B48402810E40B0073FF6E /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B9EE0EAE281B512200DDAA23 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */,
+				B921AB6D281EE13D007D83DC /* Grid.swift */,
+				B921AB6F281EE4A1007D83DC /* Constants.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,8 +284,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B921AB70281EE4A1007D83DC /* Constants.swift in Sources */,
+				B9EE0EAC281B48D600DDAA23 /* LetterModel.swift in Sources */,
 				B93B48412810E40B0073FF6E /* ContentView.swift in Sources */,
 				B93B483F2810E40B0073FF6E /* TBGB_ControlApp.swift in Sources */,
+				B921AB6E281EE13D007D83DC /* Grid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,10 +450,11 @@
 				DEVELOPMENT_TEAM = YMRYMP6FN7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "TBGB-Control-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -449,10 +480,11 @@
 				DEVELOPMENT_TEAM = YMRYMP6FN7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "TBGB-Control-Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
