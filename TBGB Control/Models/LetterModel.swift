@@ -11,10 +11,19 @@ import SwiftUI
 class LetterModel: ObservableObject {
     @Published var frames = 0
     public var grid: Grid
+    public var elapsed: Double = 0
     
     init() {
         self.grid = Grid(color: Color.purple)
         self.grid[5, 10] = Color.black
+    }
+    
+    func animation() -> String {
+        return "blackout"
+    }
+    
+    func power() -> Double {
+        return 0.4269
     }
     
     func has_pixel(x: Int, y: Int) -> Bool {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreFoundation
 
 struct ContentView: View {
     
@@ -14,11 +15,27 @@ struct ContentView: View {
     struct AnimationButtonStyle : ButtonStyle {
         func makeBody(configuration: ButtonStyleConfiguration) -> some View {
             configuration.label
-                .padding()
+                .scaleEffect(configuration.isPressed ? 0.85 : 1)
+                .background(configuration.isPressed ? Color.blue.cornerRadius(8) : Color.gray.cornerRadius(8))
+            // TODO: make the whole button blue on press, not just the text part
+        }
+    }
+    
+    struct StatusText : View {
+        private let text: String
+        
+        private let sfont = Font
+            .system(size: 14)
+            .monospaced()
+        
+        init(_ text: String) {
+            self.text = text
+        }
+        
+        var body: some View {
+            Text(text)
+                .font(sfont)
                 .foregroundColor(.white)
-                .background(Color.gray.cornerRadius(8))
-                .scaleEffect(configuration.isPressed ? 0.95 : 1)
-                .frame(width: 115)
         }
     }
     
@@ -30,10 +47,21 @@ struct ContentView: View {
     let b4_xoff = CGFloat(29.5)
     let b_yoff_upper = CGFloat(2.5)
     let b_yoff_lower = CGFloat(9.5)
+    let button_rows = 3
+    let button_cols = 8
+    
+    var timebase_info = mach_timebase_info(numer: 0, denom: 0)
+    @State private var elapsed: Double = 0 // TODO: state problem
+    @State private var master: Double = 1 // RGB multiplier
+    
+    init() {
+        mach_timebase_info(&timebase_info)
+    }
     
     var body: some View {
         VStack() {
             Canvas { context, size in
+                // let start_time = mach_absolute_time() TODO: state problem
                 let xoff = CGFloat(size.width * margin)
                 let yoff = CGFloat(size.height * margin)
                 let dx = CGFloat((Float(size.width) * Float(1 - margin * 2) / Float(Constants.TBGB_XMAX - 1)))
@@ -125,7 +153,9 @@ struct ContentView: View {
                 }
                 b4_in_lower.closeSubpath()
                 context.stroke(b4_in_lower, with: .color(outline))
-                
+                // TODO: state problem
+                // can't modify state during view update
+                // viewModel.elapsed = Double(mach_absolute_time() - start_time) * Double(timebase_info.numer) / Double(timebase_info.denom)
             }
             .frame(height: 750)
             .border(outline)
@@ -133,117 +163,54 @@ struct ContentView: View {
         
             HStack() {
                 VStack() { // button rows
-                    HStack() {
-                        Button(action: { tbgb(anim: 0) }) {
-                            Text("Button 00")
+                    ForEach(0..<button_rows, id: \.self) { row in
+                        HStack() {
+                            ForEach(0..<button_cols, id: \.self) { col in
+                                Button(action: { tbgb(anim: row * button_cols + col) }) {
+                                    Text("Button \(row * button_cols + col)")
+                                        .padding(EdgeInsets(top: 18, leading: 20, bottom: 18, trailing: 20))
+                                }
+                                .frame(width: 125)
+                                .foregroundColor(.white)
+                                .background(Color.gray.cornerRadius(8))
+                                .buttonStyle(AnimationButtonStyle()) // TODO: do this without a style, and only for the button
+                            }
                         }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 1) }) {
-                            Text("Button 01")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 2) }) {
-                            Text("Button 02")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 3) }) {
-                            Text("Button 03")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 4) }) {
-                            Text("Button 04")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 5) }) {
-                            Text("Button 05")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 6) }) {
-                            Text("Button 06")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 7) }) {
-                            Text("Button 07")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
+                       .padding(.leading)
                     }
-                    .padding(.leading)
-                    HStack() { // row 2
-                        Button(action: { tbgb(anim: 8) }) {
-                            Text("Button 08")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 9) }) {
-                            Text("Button 09")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 10) }) {
-                            Text("Button 10")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 11) }) {
-                            Text("Button 11")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 12) }) {
-                            Text("Button 12")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 13) }) {
-                            Text("Button 13")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 14) }) {
-                            Text("Button 14")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 15) }) {
-                            Text("Button 15")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                    }
-                    .padding(.leading)
-                    HStack() { // row 3
-                        Button(action: { tbgb(anim: 16) }) {
-                            Text("Button 16")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 17) }) {
-                            Text("Button 17")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 18) }) {
-                            Text("Button 18")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 19) }) {
-                            Text("Button 19")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 20) }) {
-                            Text("Button 20")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 21) }) {
-                            Text("Button 21")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 22) }) {
-                            Text("Button 22")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                        Button(action: { tbgb(anim: 23) }) {
-                            Text("Button 23")
-                        }
-                        .buttonStyle(AnimationButtonStyle())
-                    }
-                    .padding(.leading)
-                    
                 }
-                Spacer() // this is where the status window will go
+                VStack() {
+                    HStack() { // status area
+                        VStack(alignment: .trailing) {
+                            StatusText("animation:")
+                            // Text("render time:").font(sfont) TODO: state problem
+                            StatusText("power:")
+                            StatusText("frames:")
+                            StatusText("live:")
+                            StatusText("sent/acked:")
+                            StatusText("latency:")
+                        }
+                        .padding(5)
+                        VStack(alignment: .leading) {
+                            StatusText(viewModel.animation().padding(toLength: 15, withPad: " ", startingAt: 0))
+                            //Text(String(format: "%.2fms", viewModel.elapsed / 1000000)).font(sfont) TODO: state problem
+                            StatusText(String(format: "%.2f%%", viewModel.power() * 100))
+                            StatusText("\(viewModel.frames)")
+                            StatusText("no")
+                            StatusText("xx/yy")
+                            StatusText("nnn")
+                        }
+                        .padding(5)
+                    }
+                    .border(outline)
+                    Slider(value: $master, in: 0...1)
+                    Text(String(format: "master: %d%%", Int(master * 100))).foregroundColor(Color.white)
+                }
+                Spacer()
             }
             Spacer()
         }
+        .background(frame_bg)
     }
     
     func tbgb(anim: Int) {
