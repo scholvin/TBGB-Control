@@ -10,7 +10,7 @@ import CoreFoundation
 
 struct ContentView: View {
     
-    @EnvironmentObject var viewModel: LetterModel
+    @EnvironmentObject var viewModel: ViewModel
     
     struct AnimationButtonStyle : ButtonStyle {
         func makeBody(configuration: ButtonStyleConfiguration) -> some View {
@@ -70,18 +70,19 @@ struct ContentView: View {
                 
                 for x in 0...Constants.TBGB_XMAX - 1 {
                     for y in 0...Constants.TBGB_YMAX - 1 {
-                        if viewModel.has_pixel(x: x, y: y) {
+                        if Letters.has_pixel(x: x, y: y) {
+                            let pixel = Globals.mod_color(color: viewModel.grid()[y, x]!, mult: master)
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
                                                                 y: yoff + CGFloat(y) * dy - pdiam / 2,
                                                                 width: pdiam, height:pdiam)),
-                                         with: .color(Color(viewModel.grid()[y, x]!)))
+                                         with: .color(Color(pixel)))
                         }
                     }
                 }
                 var t_out = Path()
-                t_out.move(to: CGPoint(x: xoff + viewModel.outline_T[0].0 * dx,
-                                       y: yoff + viewModel.outline_T[0].1 * dy))
-                for i in viewModel.outline_T {
+                t_out.move(to: CGPoint(x: xoff + Letters.outline_T[0].0 * dx,
+                                       y: yoff + Letters.outline_T[0].1 * dy))
+                for i in Letters.outline_T {
                     t_out.addLine(to: CGPoint(x: xoff + i.0 * dx,
                                               y: yoff + i.1 * dy))
                 }
@@ -89,27 +90,27 @@ struct ContentView: View {
                 context.stroke(t_out, with: .color(outline))
                 
                 var b2_out = Path()
-                b2_out.move(to: CGPoint(x: xoff + (viewModel.outline_B_outer[0].0 + b2_xoff) * dx,
-                                        y: yoff + viewModel.outline_B_outer[0].1 * dy))
-                for i in viewModel.outline_B_outer {
+                b2_out.move(to: CGPoint(x: xoff + (Letters.outline_B_outer[0].0 + b2_xoff) * dx,
+                                        y: yoff + Letters.outline_B_outer[0].1 * dy))
+                for i in Letters.outline_B_outer {
                     b2_out.addLine(to: CGPoint(x: xoff + (i.0 + b2_xoff) * dx,
                                                y: yoff + i.1 * dy))
                 }
                 b2_out.closeSubpath()
                 context.stroke(b2_out, with: .color(outline))
                 var b2_in_upper = Path()
-                b2_in_upper.move(to: CGPoint(x: xoff + (viewModel.outline_B_inner[0].0 + b2_xoff) * dx,
-                                             y: yoff + (viewModel.outline_B_inner[0].1 + b_yoff_upper) * dy))
-                for i in viewModel.outline_B_inner {
+                b2_in_upper.move(to: CGPoint(x: xoff + (Letters.outline_B_inner[0].0 + b2_xoff) * dx,
+                                             y: yoff + (Letters.outline_B_inner[0].1 + b_yoff_upper) * dy))
+                for i in Letters.outline_B_inner {
                     b2_in_upper.addLine(to: CGPoint(x: xoff + (i.0 + b2_xoff) * dx,
                                                     y: yoff + (i.1 + b_yoff_upper) * dy))
                 }
                 b2_in_upper.closeSubpath()
                 context.stroke(b2_in_upper, with: .color(outline))
                 var b2_in_lower = Path()
-                b2_in_lower.move(to: CGPoint(x: xoff + (viewModel.outline_B_inner[0].0 + b2_xoff) * dx,
-                                             y: yoff + (viewModel.outline_B_inner[0].1 + b_yoff_lower) * dy))
-                for i in viewModel.outline_B_inner {
+                b2_in_lower.move(to: CGPoint(x: xoff + (Letters.outline_B_inner[0].0 + b2_xoff) * dx,
+                                             y: yoff + (Letters.outline_B_inner[0].1 + b_yoff_lower) * dy))
+                for i in Letters.outline_B_inner {
                     b2_in_lower.addLine(to: CGPoint(x: xoff + (i.0 + b2_xoff) * dx,
                                                     y: yoff + (i.1 + b_yoff_lower) * dy))
                 }
@@ -117,9 +118,9 @@ struct ContentView: View {
                 context.stroke(b2_in_lower, with: .color(outline))
                 
                 var g_out = Path()
-                g_out.move(to: CGPoint(x: xoff + viewModel.outline_G_outer[0].0 * dx,
-                                       y: yoff + viewModel.outline_G_outer[0].1 * dy))
-                for i in viewModel.outline_G_outer {
+                g_out.move(to: CGPoint(x: xoff + Letters.outline_G_outer[0].0 * dx,
+                                       y: yoff + Letters.outline_G_outer[0].1 * dy))
+                for i in Letters.outline_G_outer {
                     g_out.addLine(to: CGPoint(x: xoff + i.0 * dx,
                                               y: yoff + i.1 * dy))
                 }
@@ -127,27 +128,27 @@ struct ContentView: View {
                 context.stroke(g_out, with: .color(outline))
                 
                 var b4_out = Path()
-                b4_out.move(to: CGPoint(x: xoff + (viewModel.outline_B_outer[0].0 + b4_xoff) * dx,
-                                        y: yoff + viewModel.outline_B_outer[0].1 * dy))
-                for i in viewModel.outline_B_outer {
+                b4_out.move(to: CGPoint(x: xoff + (Letters.outline_B_outer[0].0 + b4_xoff) * dx,
+                                        y: yoff + Letters.outline_B_outer[0].1 * dy))
+                for i in Letters.outline_B_outer {
                     b4_out.addLine(to: CGPoint(x: xoff + (i.0 + b4_xoff) * dx,
                                                y: yoff + i.1 * dy))
                 }
                 b4_out.closeSubpath()
                 context.stroke(b4_out, with: .color(outline))
                 var b4_in_upper = Path()
-                b4_in_upper.move(to: CGPoint(x: xoff + (viewModel.outline_B_inner[0].0 + b4_xoff) * dx,
-                                             y: yoff + (viewModel.outline_B_inner[0].1 + b_yoff_upper) * dy))
-                for i in viewModel.outline_B_inner {
+                b4_in_upper.move(to: CGPoint(x: xoff + (Letters.outline_B_inner[0].0 + b4_xoff) * dx,
+                                             y: yoff + (Letters.outline_B_inner[0].1 + b_yoff_upper) * dy))
+                for i in Letters.outline_B_inner {
                     b4_in_upper.addLine(to: CGPoint(x: xoff + (i.0 + b4_xoff) * dx,
                                                     y: yoff + (i.1 + b_yoff_upper) * dy))
                 }
                 b4_in_upper.closeSubpath()
                 context.stroke(b4_in_upper, with: .color(outline))
                 var b4_in_lower = Path()
-                b4_in_lower.move(to: CGPoint(x: xoff + (viewModel.outline_B_inner[0].0 + b4_xoff) * dx,
-                                             y: yoff + (viewModel.outline_B_inner[0].1 + b_yoff_lower) * dy))
-                for i in viewModel.outline_B_inner {
+                b4_in_lower.move(to: CGPoint(x: xoff + (Letters.outline_B_inner[0].0 + b4_xoff) * dx,
+                                             y: yoff + (Letters.outline_B_inner[0].1 + b_yoff_lower) * dy))
+                for i in Letters.outline_B_inner {
                     b4_in_lower.addLine(to: CGPoint(x: xoff + (i.0 + b4_xoff) * dx,
                                                     y: yoff + (i.1 + b_yoff_lower) * dy))
                 }
@@ -172,7 +173,7 @@ struct ContentView: View {
                                         .padding(EdgeInsets(top: 18, leading: 18, bottom: 18, trailing: 18))
                                 }
                                 .frame(width: 125)
-                                .foregroundColor(.black)
+                                .foregroundColor(but < viewModel.anim_count() ? .white : .black)
                                 .background(Color.gray.cornerRadius(8))
                                 .buttonStyle(AnimationButtonStyle()) // TODO: do this without a style, and only for the button
                                 .disabled(but >= viewModel.anim_count())
@@ -197,7 +198,7 @@ struct ContentView: View {
                         VStack(alignment: .leading) {
                             StatusText(viewModel.animation().padding(toLength: 15, withPad: " ", startingAt: 0))
                             //Text(String(format: "%.2fms", viewModel.elapsed / 1000000)).font(sfont) TODO: state problem
-                            StatusText(String(format: "%.2f%%", viewModel.power() * 100))
+                            StatusText(String(format: "%.2f%%", viewModel.power() * master * 100))
                             StatusText("\(viewModel.frames)")
                             StatusText("no")
                             StatusText("xx/yy")
@@ -226,6 +227,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .previewInterfaceOrientation(.landscapeLeft)
-            .environmentObject(LetterModel())
+            .environmentObject(ViewModel())
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct TBGB_ControlApp: App {
     
-    @StateObject var viewModel = LetterModel()
+    @StateObject var viewModel = ViewModel()
     
     var body: some Scene {
         WindowGroup {

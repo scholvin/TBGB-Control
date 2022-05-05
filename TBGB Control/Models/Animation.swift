@@ -13,20 +13,26 @@ import SwiftUI
 struct Cel {
     var grid: Grid
     var time_msec: Int = 0
+    var cached_power: Double = -1
     
-    func power() -> Double {
-        
-        /* get to this tomorrow - have to move has_pixel to some global thing
+    // this is a little mathy, so we'll calculate it only when its as
+    mutating func power() -> Double {
+        if cached_power != -1 {
+            return cached_power
+        }
         var p: Double = 0
         for x in 0...Constants.TBGB_XMAX - 1 {
             for y in 0...Constants.TBGB_YMAX - 1 {
-                if viewModel.has_pixel(x: x, y: y) {
-                    let components = view
+                if Letters.has_pixel(x: x, y: y) {
+                    let components = grid[y, x]!.components
+                    for i in 0...2 {
+                        p += components![i]
+                    }
                 }
             }
         }
-         */
-        return 0.4269
+        cached_power = p / Double(Letters.pixels_T + 2 * Letters.pixels_B + Letters.pixels_G) / 3
+        return cached_power
     }
 }
 
@@ -53,12 +59,6 @@ class AnimationManager {
         _animations.append(hardwhite())
     }
     
-    // utility modify the input color by multiplying the RGB space by mult
-    func mod_color(color: CGColor, mult: Double) -> CGColor {
-        let components = color.components
-        return CGColor(red: components![0] * mult, green: components![1] * mult, blue: components![2] * mult, alpha: components![3])
-    }
-    
     // return all the animations we made
     func animations() -> [Animation] {
         return _animations
@@ -80,7 +80,7 @@ class AnimationManager {
     }
     
     func white25() -> Animation {
-        let s = Cel(grid: Grid(color: mod_color(color: INCANDESCENT, mult: 0.25)))
+        let s = Cel(grid: Grid(color: Globals.mod_color(color: INCANDESCENT, mult: 0.25)))
         let a = Animation(cels: [s], name: "25% white")
         return a
     }
