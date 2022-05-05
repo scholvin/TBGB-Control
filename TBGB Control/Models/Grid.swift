@@ -6,17 +6,17 @@
 //
 
 import Foundation
-import SwiftUI
+import CoreGraphics
 
 // borrowed from here https://stackoverflow.com/a/68964615/1053577
 struct Grid {      
-    var elements: [Color?]
+    var elements: [CGColor?]
     
-    init(color: Color = Color.black) {
+    init(color: CGColor) {
         self.elements = Array(repeating: color, count: Constants.TBGB_YMAX * Constants.TBGB_XMAX)
     }
     
-    subscript(row: Int, column: Int) -> Color? {
+    subscript(row: Int, column: Int) -> CGColor? {
         get { elements[(row * Constants.TBGB_XMAX) + column] }
         set { elements[(row * Constants.TBGB_XMAX) + column] = newValue }
     }

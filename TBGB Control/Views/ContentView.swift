@@ -74,7 +74,7 @@ struct ContentView: View {
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
                                                                 y: yoff + CGFloat(y) * dy - pdiam / 2,
                                                                 width: pdiam, height:pdiam)),
-                                         with: .color(viewModel.grid[y, x]!))
+                                         with: .color(Color(viewModel.grid()[y, x]!)))
                         }
                     }
                 }
@@ -166,14 +166,17 @@ struct ContentView: View {
                     ForEach(0..<button_rows, id: \.self) { row in
                         HStack() {
                             ForEach(0..<button_cols, id: \.self) { col in
-                                Button(action: { tbgb(anim: row * button_cols + col) }) {
-                                    Text("Button \(row * button_cols + col)")
-                                        .padding(EdgeInsets(top: 18, leading: 20, bottom: 18, trailing: 20))
+                                let but = row * button_cols + col
+                                Button(action: { tbgb(anim: but) }) {
+                                    Text(viewModel.anim_name(num: but))
+                                        .padding(EdgeInsets(top: 18, leading: 18, bottom: 18, trailing: 18))
                                 }
                                 .frame(width: 125)
-                                .foregroundColor(.white)
+                                .foregroundColor(.black)
                                 .background(Color.gray.cornerRadius(8))
                                 .buttonStyle(AnimationButtonStyle()) // TODO: do this without a style, and only for the button
+                                .disabled(but >= viewModel.anim_count())
+
                             }
                         }
                        .padding(.leading)
@@ -215,6 +218,7 @@ struct ContentView: View {
     
     func tbgb(anim: Int) {
         print("button \(anim) invoked")
+        viewModel.change_animation(anim: anim)
     }
 }
 

@@ -16,6 +16,7 @@
 		B93B48502810E40D0073FF6E /* TBGB_ControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B484F2810E40D0073FF6E /* TBGB_ControlTests.swift */; };
 		B93B485A2810E40D0073FF6E /* TBGB_ControlUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B48592810E40D0073FF6E /* TBGB_ControlUITests.swift */; };
 		B93B485C2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B485B2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift */; };
+		B9B2F9B2282332AA00291F08 /* Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2F9B1282332AA00291F08 /* Animation.swift */; };
 		B9BE25FA281F83420071D995 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BE25F9281F83420071D995 /* SettingsView.swift */; };
 		B9EE0EAC281B48D600DDAA23 /* LetterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */; };
 /* End PBXBuildFile section */
@@ -51,6 +52,7 @@
 		B93B48592810E40D0073FF6E /* TBGB_ControlUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBGB_ControlUITests.swift; sourceTree = "<group>"; };
 		B93B485B2810E40D0073FF6E /* TBGB_ControlUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TBGB_ControlUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		B93B48682810E6750073FF6E /* TBGB-Control-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "TBGB-Control-Info.plist"; sourceTree = SOURCE_ROOT; };
+		B9B2F9B1282332AA00291F08 /* Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animation.swift; sourceTree = "<group>"; };
 		B9BE25F9281F83420071D995 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -153,6 +155,7 @@
 				B9EE0EAB281B48D600DDAA23 /* LetterModel.swift */,
 				B921AB6D281EE13D007D83DC /* Grid.swift */,
 				B921AB6F281EE4A1007D83DC /* Constants.swift */,
+				B9B2F9B1282332AA00291F08 /* Animation.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				B93B48412810E40B0073FF6E /* ContentView.swift in Sources */,
 				B9BE25FA281F83420071D995 /* SettingsView.swift in Sources */,
 				B93B483F2810E40B0073FF6E /* TBGB_ControlApp.swift in Sources */,
+				B9B2F9B2282332AA00291F08 /* Animation.swift in Sources */,
 				B921AB6E281EE13D007D83DC /* Grid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
