@@ -4,6 +4,8 @@
 //
 //  Created by John Scholvin on 5/5/22.
 //
+// Information about the layout of the letters themselves
+// All coordinates are specified as (x, y)
 
 import Foundation
 import CoreGraphics

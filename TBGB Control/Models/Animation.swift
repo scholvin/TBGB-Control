@@ -13,7 +13,7 @@ import SwiftUI
 struct Cel {
     var grid: Grid
     var time_msec: Int = 0
-    var cached_power: Double = -1
+    var cached_power: Double = -1 // TODO: make me private
     
     // this is a little mathy, so we'll calculate it only when its as
     mutating func power() -> Double {
@@ -41,6 +41,7 @@ struct Cel {
 struct Animation {
     var cels: [Cel]
     var name: String
+    var pre_blackout: Bool = false
 }
 
 // this creates the list of all Animations for the application
@@ -56,6 +57,7 @@ class AnimationManager {
         _animations.append(blackout())
         _animations.append(white100())
         _animations.append(white25())
+        _animations.append(topdown())
         _animations.append(hardwhite())
     }
     
@@ -90,4 +92,23 @@ class AnimationManager {
         let a = Animation(cels: [s], name: "hard white")
         return a
     }
+    
+    func topdown() -> Animation {
+        let delay = 50
+        var cels: [Cel] = []
+        for z in 0..<Constants.TBGB_YMAX {
+            var cel = Cel(grid: Grid(color: BLACK))
+            for y in 0...z {
+                for x in 0..<Constants.TBGB_XMAX {
+                    cel.grid[y, x] = INCANDESCENT
+                }
+            }
+            cel.time_msec = delay
+            cels.append(cel)            
+        }
+        return Animation(cels: cels, name: "top down", pre_blackout: true)
+    }
+    
+    
+    
 }

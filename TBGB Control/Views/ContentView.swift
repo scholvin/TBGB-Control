@@ -66,7 +66,7 @@ struct ContentView: View {
                 let yoff = CGFloat(size.height * margin)
                 let dx = CGFloat((Float(size.width) * Float(1 - margin * 2) / Float(Constants.TBGB_XMAX - 1)))
                 let dy = CGFloat((Float(size.height) * Float(1 - margin * 2) / Float(Constants.TBGB_YMAX - 1)))
-                print("width: \(size.width) height: \(size.height) xoff: \(xoff) yoff: \(yoff) dx: \(dx) dy: \(dy)")
+                //print("width: \(size.width) height: \(size.height) xoff: \(xoff) yoff: \(yoff) dx: \(dx) dy: \(dy)")
                 
                 for x in 0...Constants.TBGB_XMAX - 1 {
                     for y in 0...Constants.TBGB_YMAX - 1 {
@@ -196,7 +196,7 @@ struct ContentView: View {
                         }
                         .padding(5)
                         VStack(alignment: .leading) {
-                            StatusText(viewModel.animation().padding(toLength: 15, withPad: " ", startingAt: 0))
+                            StatusText(viewModel.anim_current().padding(toLength: 15, withPad: " ", startingAt: 0))
                             //Text(String(format: "%.2fms", viewModel.elapsed / 1000000)).font(sfont) TODO: state problem
                             StatusText(String(format: "%.2f%%", viewModel.power() * master * 100))
                             StatusText("\(viewModel.frames)")
@@ -218,7 +218,6 @@ struct ContentView: View {
     }
     
     func tbgb(anim: Int) {
-        print("button \(anim) invoked")
         viewModel.change_animation(anim: anim)
     }
 }
