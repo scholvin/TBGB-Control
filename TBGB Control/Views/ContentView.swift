@@ -209,10 +209,21 @@ struct ContentView: View {
                     .border(outline)
                     Slider(value: $master, in: 0...1)
                     Text(String(format: "master: %d%%", Int(master * 100))).foregroundColor(Color.white)
+                    HStack() {
+                        Spacer()
+                        Button(action: {
+                            print("settings")
+                        }) {
+                            // see SF Symbols app for more
+                            Image(systemName: "gearshape.fill")
+                                .imageScale(.large)
+                        }
+                        .foregroundColor(Color.white)
+                    }
+                    .padding()
                 }
                 Spacer()
             }
-            Spacer()
         }
         .background(frame_bg)
     }
