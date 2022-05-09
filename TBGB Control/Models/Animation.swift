@@ -24,7 +24,7 @@ struct Cel {
         for x in 0...Constants.TBGB_XMAX - 1 {
             for y in 0...Constants.TBGB_YMAX - 1 {
                 if Letters.has_pixel(x: x, y: y) {
-                    let components = grid[y, x]!.components
+                    let components = grid[x, y]!.components
                     for i in 0...2 {
                         p += components![i]
                     }
@@ -100,7 +100,7 @@ class AnimationManager {
             var cel = Cel(grid: Grid(color: BLACK))
             for y in 0...z {
                 for x in 0..<Constants.TBGB_XMAX {
-                    cel.grid[y, x] = INCANDESCENT
+                    cel.grid[x, y] = INCANDESCENT
                 }
             }
             cel.time_msec = delay

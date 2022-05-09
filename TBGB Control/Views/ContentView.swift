@@ -71,7 +71,7 @@ struct ContentView: View {
                 for x in 0...Constants.TBGB_XMAX - 1 {
                     for y in 0...Constants.TBGB_YMAX - 1 {
                         if Letters.has_pixel(x: x, y: y) {
-                            let pixel = Globals.mod_color(color: viewModel.grid()[y, x]!, mult: master)
+                            let pixel = Globals.mod_color(color: viewModel.grid()[x, y]!, mult: master)
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
                                                                 y: yoff + CGFloat(y) * dy - pdiam / 2,
                                                                 width: pdiam, height:pdiam)),
@@ -170,7 +170,7 @@ struct ContentView: View {
                                 let but = row * button_cols + col
                                 Button(action: { tbgb(anim: but) }) {
                                     Text(viewModel.anim_name(num: but))
-                                        .padding(EdgeInsets(top: 18, leading: 18, bottom: 18, trailing: 18))
+                                        .padding(EdgeInsets(top: 18, leading: 10, bottom: 18, trailing: 10))
                                 }
                                 .frame(width: 125)
                                 .foregroundColor(but < viewModel.anim_count() ? .white : .black)

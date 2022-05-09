@@ -16,8 +16,8 @@ struct Grid {
         self.elements = Array(repeating: color, count: Constants.TBGB_YMAX * Constants.TBGB_XMAX)
     }
     
-    subscript(row: Int, column: Int) -> CGColor? {
-        get { elements[(row * Constants.TBGB_XMAX) + column] }
-        set { elements[(row * Constants.TBGB_XMAX) + column] = newValue }
+    subscript(x: Int, y: Int) -> CGColor? {
+        get { elements[(y * Constants.TBGB_XMAX) + x] }
+        set { elements[(y * Constants.TBGB_XMAX) + x] = newValue }
     }
 }
