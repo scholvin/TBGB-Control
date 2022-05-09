@@ -49,6 +49,8 @@ class AnimationManager {
     // there is some way to do these named constants based on CGColor class variables, but swift makes no sense
     let BLACK = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
     let WHITE = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+    let GREEN = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
+    let ORANGE = CGColor(red: 1, green: 0.647, blue: 0, alpha: 1)
     let INCANDESCENT = CGColor(red: 1, green: 144.0/255.0, blue: 32.0/255.0, alpha: 1)
     
     var _animations: [Animation] = []
@@ -59,6 +61,7 @@ class AnimationManager {
         _animations.append(white25())
         _animations.append(topdown())
         _animations.append(hardwhite())
+        _animations.append(linetest())
     }
     
     // return all the animations we made
@@ -107,6 +110,14 @@ class AnimationManager {
             cels.append(cel)            
         }
         return Animation(cels: cels, name: "top down", pre_blackout: true)
+    }
+    
+    func linetest() -> Animation {
+        var g = Grid(color: BLACK)
+        g.line(x0: 0, y0: 0, x1: Constants.TBGB_XMAX-1, y1: Constants.TBGB_YMAX-1, color: ORANGE)
+        g.line(x0: Constants.TBGB_XMAX-1, y0: 0, x1: 0, y1: Constants.TBGB_YMAX-1, color: GREEN)
+        let cel = Cel(grid: g)
+        return Animation(cels: [cel], name: "linetest")
     }
     
     
