@@ -21,8 +21,8 @@ struct Cel {
             return cached_power
         }
         var p: Double = 0
-        for x in 0...Constants.TBGB_XMAX - 1 {
-            for y in 0...Constants.TBGB_YMAX - 1 {
+        for x in 0...TBGB.XMAX - 1 {
+            for y in 0...TBGB.YMAX - 1 {
                 if Letters.has_pixel(x: x, y: y) {
                     let components = grid[x, y]!.components
                     for i in 0...2 {
@@ -46,13 +46,6 @@ struct Animation {
 
 // this creates the list of all Animations for the application
 class AnimationManager {
-    // there is some way to do these named constants based on CGColor class variables, but swift makes no sense
-    let BLACK = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
-    let WHITE = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
-    let GREEN = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
-    let ORANGE = CGColor(red: 1, green: 0.647, blue: 0, alpha: 1)
-    let INCANDESCENT = CGColor(red: 1, green: 144.0/255.0, blue: 32.0/255.0, alpha: 1)
-    
     var _animations: [Animation] = []
     
     init() {
@@ -60,8 +53,11 @@ class AnimationManager {
         _animations.append(white100())
         _animations.append(white25())
         _animations.append(topdown())
+        _animations.append(rainbow())
+        
         _animations.append(hardwhite())
-        _animations.append(linetest())
+        //_animations.append(linetest())
+       
     }
     
     // return all the animations we made
@@ -73,37 +69,37 @@ class AnimationManager {
     // individual animations below here
     
     func blackout() -> Animation {
-        let s = Cel(grid: Grid(color: BLACK))
+        let s = Cel(grid: Grid(color: TBGB.BLACK))
         let a = Animation(cels: [s], name: "blackout")
         return a
     }
     
     func white100() -> Animation {
-        let s = Cel(grid: Grid(color: INCANDESCENT))
+        let s = Cel(grid: Grid(color: TBGB.INCANDESCENT))
         let a = Animation(cels: [s], name: "100% white")
         return a
     }
     
     func white25() -> Animation {
-        let s = Cel(grid: Grid(color: Globals.mod_color(color: INCANDESCENT, mult: 0.25)))
+        let s = Cel(grid: Grid(color: Globals.mod_color(color: TBGB.INCANDESCENT, mult: 0.25)))
         let a = Animation(cels: [s], name: "25% white")
         return a
     }
     
     func hardwhite() -> Animation {
-        let s = Cel(grid: Grid(color: WHITE))
+        let s = Cel(grid: Grid(color: TBGB.WHITE))
         let a = Animation(cels: [s], name: "hard white")
         return a
     }
     
     func topdown() -> Animation {
-        let delay = 50
+        let delay = 75
         var cels: [Cel] = []
-        for z in 0..<Constants.TBGB_YMAX {
-            var cel = Cel(grid: Grid(color: BLACK))
+        for z in 0..<TBGB.YMAX {
+            var cel = Cel(grid: Grid(color: TBGB.BLACK))
             for y in 0...z {
-                for x in 0..<Constants.TBGB_XMAX {
-                    cel.grid[x, y] = INCANDESCENT
+                for x in 0..<TBGB.XMAX {
+                    cel.grid[x, y] = TBGB.INCANDESCENT
                 }
             }
             cel.time_msec = delay
@@ -113,11 +109,28 @@ class AnimationManager {
     }
     
     func linetest() -> Animation {
-        var g = Grid(color: BLACK)
-        g.line(x0: 0, y0: 0, x1: Constants.TBGB_XMAX-1, y1: Constants.TBGB_YMAX-1, color: ORANGE)
-        g.line(x0: Constants.TBGB_XMAX-1, y0: 0, x1: 0, y1: Constants.TBGB_YMAX-1, color: GREEN)
+        var g = Grid(color: TBGB.BLACK)
+        g.line(x0: 0, y0: 0, x1: TBGB.XMAX-1, y1: TBGB.YMAX-1, color: TBGB.ORANGE)
+        g.line(x0: TBGB.XMAX-1, y0: 0, x1: 0, y1: TBGB.YMAX-1, color: TBGB.GREEN)
         let cel = Cel(grid: g)
         return Animation(cels: [cel], name: "linetest")
+    }
+    
+    // someday: make it appear to go NW -> SE
+    func rainbow() -> Animation {
+        var cels: [Cel] = []
+        var c = 0
+        
+        for _ in 0..<TBGB.RAINBOW.count {
+            var g = Grid(color: TBGB.BLACK)
+            for x in 0..<(TBGB.XMAX + TBGB.YMAX - 2) {
+                g.line(x0: x, y0: 0, x1: 0, y1: x, color: TBGB.RAINBOW[c]);
+                c = (c + 1) % TBGB.RAINBOW.count
+            }
+            cels.append(Cel(grid: g, time_msec: 75))
+            c = (c + 1) % TBGB.RAINBOW.count
+        }
+        return Animation(cels: cels, name: "rainbow")
     }
     
     

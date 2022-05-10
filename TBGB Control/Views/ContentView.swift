@@ -64,12 +64,12 @@ struct ContentView: View {
                 // let start_time = mach_absolute_time() TODO: state problem
                 let xoff = CGFloat(size.width * margin)
                 let yoff = CGFloat(size.height * margin)
-                let dx = CGFloat((Float(size.width) * Float(1 - margin * 2) / Float(Constants.TBGB_XMAX - 1)))
-                let dy = CGFloat((Float(size.height) * Float(1 - margin * 2) / Float(Constants.TBGB_YMAX - 1)))
+                let dx = CGFloat((Float(size.width) * Float(1 - margin * 2) / Float(TBGB.XMAX - 1)))
+                let dy = CGFloat((Float(size.height) * Float(1 - margin * 2) / Float(TBGB.YMAX - 1)))
                 //print("width: \(size.width) height: \(size.height) xoff: \(xoff) yoff: \(yoff) dx: \(dx) dy: \(dy)")
                 
-                for x in 0...Constants.TBGB_XMAX - 1 {
-                    for y in 0...Constants.TBGB_YMAX - 1 {
+                for x in 0...TBGB.XMAX - 1 {
+                    for y in 0...TBGB.YMAX - 1 {
                         if Letters.has_pixel(x: x, y: y) {
                             let pixel = Globals.mod_color(color: viewModel.grid()[x, y]!, mult: master)
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,

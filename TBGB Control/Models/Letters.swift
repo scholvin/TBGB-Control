@@ -12,7 +12,7 @@ import CoreGraphics
 
 struct Letters {
     static func has_pixel(x: Int, y: Int) -> Bool {
-        if x >= Constants.TBGB_XMAX || y >= Constants.TBGB_YMAX || x < 0 || y < 0 {
+        if x >= TBGB.XMAX || y >= TBGB.YMAX || x < 0 || y < 0 {
             return false
         }
         let index = bips[y].index(bips[y].startIndex, offsetBy: x)

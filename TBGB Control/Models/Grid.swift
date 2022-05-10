@@ -13,12 +13,12 @@ struct Grid {
     var elements: [CGColor?]
     
     init(color: CGColor) {
-        self.elements = Array(repeating: color, count: Constants.TBGB_YMAX * Constants.TBGB_XMAX)
+        self.elements = Array(repeating: color, count: TBGB.YMAX * TBGB.XMAX)
     }
     
     subscript(x: Int, y: Int) -> CGColor? {
-        get { elements[(y * Constants.TBGB_XMAX) + x] }
-        set { elements[(y * Constants.TBGB_XMAX) + x] = newValue }
+        get { elements[(y * TBGB.XMAX) + x] }
+        set { elements[(y * TBGB.XMAX) + x] = newValue }
     }
     
     // Bresenham rides again
@@ -27,7 +27,7 @@ struct Grid {
         if x0 == x1 {
             // special case for vertical
             for y in min(y0, y1)...max(y0, y1) {
-                if x0 >= 0 && x0 < Constants.TBGB_XMAX && y >= 0 && y < Constants.TBGB_YMAX {
+                if x0 >= 0 && x0 < TBGB.XMAX && y >= 0 && y < TBGB.YMAX {
                     self[x0, y] = color
                 }
             }
@@ -37,7 +37,7 @@ struct Grid {
         if y0 == y1 {
             // special case for horizontal
             for x in min(x0, x1)...max(x0, x1) {
-                if x >= 0 && x < Constants.TBGB_XMAX && y0 >= 0 && y0 < Constants.TBGB_YMAX {
+                if x >= 0 && x < TBGB.XMAX && y0 >= 0 && y0 < TBGB.YMAX {
                     self[x, y0] = color;
                 }
             }
@@ -70,7 +70,7 @@ struct Grid {
         var y: Int = y0
 
         for x in x0...x1 {
-            if x >= 0 && x < Constants.TBGB_XMAX && y >= 0 && y < Constants.TBGB_YMAX {
+            if x >= 0 && x < TBGB.XMAX && y >= 0 && y < TBGB.YMAX {
                 // silent clip
                 self[x, y] = color
             }
@@ -94,7 +94,7 @@ struct Grid {
         var x: Int = x0
 
         for y in y0...y1 {
-            if x >= 0 && x < Constants.TBGB_XMAX && y >= 0 && y < Constants.TBGB_YMAX {
+            if x >= 0 && x < TBGB.XMAX && y >= 0 && y < TBGB.YMAX {
                 // silent clip
                 self[x,y] = color
             }

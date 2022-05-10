@@ -8,14 +8,31 @@
 import Foundation
 import CoreGraphics
 
-struct Constants {    
+struct TBGB {
     static let LETTER_WIDTH = 9
     static let T1_START = 0
     static let B2_START = T1_START + LETTER_WIDTH + 1
     static let G3_START = B2_START + LETTER_WIDTH + 1
     static let B4_START = G3_START + LETTER_WIDTH + 1
-    static let TBGB_XMAX = B4_START + LETTER_WIDTH      // columns
-    static let TBGB_YMAX = 17                           // rows
+    static let XMAX = B4_START + LETTER_WIDTH      // columns
+    static let YMAX = 17                           // rows
+    
+    // there is some way to do these named constants based on CGColor class variables, but swift makes no sense
+    static let BLACK = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+    static let WHITE = CGColor(red: 1, green: 1, blue: 1, alpha: 1)
+   
+    // https://drafts.csswg.org/css-color/#named-colors
+    static let RED = CGColor(red: 1, green: 0, blue: 0, alpha: 1)
+    static let ORANGE = CGColor(red: 1, green: 0.647, blue: 0, alpha: 1)
+    static let YELLOW = CGColor(red: 1, green: 1, blue: 0, alpha: 1)
+    static let GREEN = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
+    static let BLUE = CGColor(red: 0, green: 0, blue: 1, alpha: 1)
+    static let PURPLE = CGColor(red: 0.5, green: 0, blue: 0.5, alpha: 1)
+    
+    // custom blend to make the LED's look more like incandescent bulbs
+    static let INCANDESCENT = CGColor(red: 1, green: 144.0/255.0, blue: 32.0/255.0, alpha: 1)
+    
+    static let RAINBOW = [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE]
 }
 
 struct Globals {
