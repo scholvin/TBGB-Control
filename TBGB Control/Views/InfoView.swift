@@ -1,20 +1,20 @@
 //
-//  SettingsView.swift
+//  InfoView.swift
 //  TBGB Control
 //
-//  Created by John Scholvin on 5/1/22.
+//  Created by John Scholvin on 5/13/22.
 //
 
 import SwiftUI
 
 // https://kristaps.me/blog/swiftui-modal-view/
 
-struct SettingsView: View {
+struct InfoView: View {
     @Binding var activeSheet: Sheet?
     
     var body: some View {
         VStack(spacing: 50) {
-            Text("Settings view.")
+            Text("Information view")
                 .font(.largeTitle)
             
             Button(action: {
@@ -23,12 +23,12 @@ struct SettingsView: View {
                 Label("Close", systemImage: "xmark.circle")
             })
         }
-        .background(Color.green)
+        .background(Color.pink)
     }
 }
 
-struct SettingsView_Previews: PreviewProvider {
+struct InfoView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(activeSheet: Binding(get: { Sheet.settings }, set: { _ in }))
+        InfoView(activeSheet: Binding(get: { Sheet.info }, set: { _ in }))
     }
 }

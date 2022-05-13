@@ -8,9 +8,32 @@
 import SwiftUI
 import CoreFoundation
 
+// how to manage the info and settings dialogs, via https://kristaps.me/blog/swiftui-modal-view/
+enum Sheet: Identifiable {
+    case info
+    case settings
+    
+    var id: Int {
+        hashValue
+    }
+}
+
+extension Sheet {
+    @ViewBuilder
+    func modalView(with binding: Binding<Sheet?>) -> some View {
+        switch self {
+        case .info:
+            InfoView(activeSheet: binding)
+        case .settings:
+            SettingsView(activeSheet: binding)
+        }
+    }
+}
+
 struct ContentView: View {
     
     @EnvironmentObject var viewModel: ViewModel
+    @State var activeSheet: Sheet?
     
     struct AnimationButtonStyle : ButtonStyle {
         func makeBody(configuration: ButtonStyleConfiguration) -> some View {
@@ -21,6 +44,7 @@ struct ContentView: View {
         }
     }
     
+    // this is to style the text in the status window
     struct StatusText : View {
         private let text: String
         
@@ -211,21 +235,29 @@ struct ContentView: View {
                     Text(String(format: "master: %d%%", Int(master * 100))).foregroundColor(Color.white)
                     HStack() {
                         Button(action: {
-                            print("info")
+                            activeSheet = .info
                         }) {
                             // see SF Symbols app for more
-                            Image(systemName: "info.circle")
+                            Image(systemName: "info.circle.fill")
                                 .renderingMode(.template)
                                 .foregroundColor(.white)
                                 .imageScale(.large)
                         }
                         Spacer()
                         Button(action: {
-                            print("settings")
+                            activeSheet = .settings
                         }) {
-                        
                             Image(systemName: "gearshape.fill")
                                 .imageScale(.large)
+                                .foregroundColor(.white)
+                        }
+                        .sheet(item: $activeSheet) { sheet in
+                            switch sheet {
+                            case .info:
+                                InfoView(activeSheet: $activeSheet)
+                            case .settings:
+                                SettingsView(activeSheet: $activeSheet)
+                            }
                         }
                         .foregroundColor(Color.white)
                     }
