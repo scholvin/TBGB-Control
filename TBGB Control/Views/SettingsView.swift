@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-// https://kristaps.me/blog/swiftui-modal-view/
+// see:
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-a-new-view-using-sheets
 
 struct SettingsView: View {
-    @Binding var activeSheet: Sheet?
-    @State var oladEnabled: Bool = false
-    @State var oladAddress: String = "192.168.1.100:9090"
+    @Environment(\.dismiss) var dismiss
+    
+    @State var settingsModel: Settings
     
     var body: some View {
         VStack() {
@@ -22,18 +23,18 @@ struct SettingsView: View {
 
             Form {
                 Section(header: Text("OLAD")) {
-                    Toggle("Active", isOn: $oladEnabled)
+                    Toggle("Active", isOn: $settingsModel.olaEnabled)
                     HStack() {
                         Text("IP")
                         Spacer()
-                        TextField("IP", text: $oladAddress).multilineTextAlignment(.trailing)
+                        TextField("IP", text: $settingsModel.olaAddress).multilineTextAlignment(.trailing)
                     }
                 }
             }
             .frame(height: 200)
-                
+
             Button(action: {
-                activeSheet = nil
+                dismiss()
             }, label: {
                 Label("OK", systemImage: "checkmark")                    
             })
@@ -50,6 +51,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(activeSheet: Binding(get: { Sheet.settings }, set: { _ in }))
+        SettingsView(settingsModel: Settings())
     }
 }
