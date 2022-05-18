@@ -38,7 +38,7 @@ class ViewModel: ObservableObject {
         _current_anim = anim
         frames += 1
 
-        // if this is an animation, schedule the next cel
+        // if this is a multi-cel animation, schedule the next cel
         if _animations[_current_anim].cels.count > 1 {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(_animations[_current_anim].cels[_current_scene].time_msec) / 1000.0)
             {
@@ -49,16 +49,25 @@ class ViewModel: ObservableObject {
                            
     // change the scene within the given animation (should be called only from timer)
     func change_scene() {
-        // go to the next cel and paint it
-        _current_scene += 1
-        if _current_scene >= _animations[_current_anim].cels.count {
-            _current_scene = 0
-        }
+        // go to the next cel and paint it, if there is a next cel
         print("change_scene \(_current_scene)")
+        _current_scene += 1
+                
+        if _current_scene == _animations[_current_anim].cels.count {
+            // we've gone past the last scene
+            _current_scene = 0
+            // do we keep animating?
+            if !_animations[_current_anim].loop {
+                print("not a looper")
+                return
+            }
+        }
+       
         frames += 1
         
-        // check to see if we should schedule the nexce cel, because the animation could have changed while we were sleeping
+        // check to see if we should schedule the next cel, because the animation could have changed while we were sleeping
         if _animations[_current_anim].cels.count > 1 {
+            print("reposting")
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(_animations[_current_anim].cels[_current_scene].time_msec) / 1000.0)
             {
                 self.change_scene()

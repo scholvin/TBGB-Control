@@ -37,11 +37,12 @@ struct Cel {
 }
 
 // an Animation is a list of Scenes
-// if the length of the list is longer than 1, this animation loops
+// if the length of the list is longer than 1 and loop == true, this animation loops
 struct Animation {
     var cels: [Cel]
     var name: String
     var pre_blackout: Bool = false
+    var loop: Bool = true
 }
 
 // this creates the list of all Animations for the application
@@ -50,8 +51,9 @@ class AnimationManager {
     
     init() {
         _animations.append(blackout())
-        _animations.append(white100())
         _animations.append(white25())
+        _animations.append(white100())
+        _animations.append(impulse())
         _animations.append(topdown())
         _animations.append(rainbow())
         
@@ -133,6 +135,32 @@ class AnimationManager {
         return Animation(cels: cels, name: "rainbow")
     }
     
+    func impulse() -> Animation {
+        let IMPULSE_STEPS = 10
+        let IMPULSE_DELAY = 5
+        let IMPULSE_START = 1.0
+        let IMPULSE_MID = 0.1
+        let IMPULSE_END = 0.25
+        
+        var cels: [Cel] = []
+        var mult = IMPULSE_START
+        while mult > IMPULSE_MID {
+            let g = Grid(color: Globals.mod_color(color: TBGB.INCANDESCENT, mult: mult))
+            var cel = Cel(grid: g)
+            cel.time_msec = IMPULSE_DELAY
+            cels.append(cel)
+            mult -= (IMPULSE_START-IMPULSE_MID) / Double(IMPULSE_STEPS)
+        }
+        while mult > IMPULSE_END {
+            let g = Grid(color: Globals.mod_color(color: TBGB.INCANDESCENT, mult: mult))
+            var cel = Cel(grid: g)
+            cel.time_msec = IMPULSE_DELAY
+            cels.append(cel)
+            mult -= (IMPULSE_MID-IMPULSE_END) / Double(IMPULSE_STEPS)
+        }
+        
+        return Animation(cels: cels, name: "impulse", loop: false)
+    }
     
     
 }
