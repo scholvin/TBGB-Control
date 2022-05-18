@@ -10,4 +10,10 @@ import Foundation
 class Settings: ObservableObject {
     var olaEnabled: Bool = false
     var olaAddress: String = "192.168.0.100:9090"
+    @Published var changed = 0
+    
+    func update()
+    {
+        changed += 1
+    }
 }

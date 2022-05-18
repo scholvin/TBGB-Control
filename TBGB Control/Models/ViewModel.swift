@@ -12,8 +12,6 @@ class ViewModel: ObservableObject {
     // this is the trigger to repaint the view, increment when ready
     @Published var frames = 0
     
-    @Published var settingsModel = Settings()
-    
     private var _animations: [Animation]
     private var _current_anim: Int = 0
     private var _current_scene: Int = 0

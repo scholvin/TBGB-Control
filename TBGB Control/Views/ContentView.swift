@@ -10,6 +10,7 @@ import CoreFoundation
 
 struct ContentView: View {
     @EnvironmentObject var viewModel: ViewModel
+    @ObservedObject var settingsModel = Settings()
     
     // for settings dialog
     // https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-a-new-view-using-sheets
@@ -27,19 +28,21 @@ struct ContentView: View {
     // this is to style the text in the status window
     struct StatusText : View {
         private let text: String
+        private let color: Color
         
         private let sfont = Font
             .system(size: 14)
             .monospaced()
         
-        init(_ text: String) {
+        init(_ text: String, color: Color = Color.white) {
             self.text = text
+            self.color = color
         }
         
         var body: some View {
             Text(text)
                 .font(sfont)
-                .foregroundColor(.white)
+                .foregroundColor(color)
         }
     }
     
@@ -163,8 +166,8 @@ struct ContentView: View {
                 // viewModel.elapsed = Double(mach_absolute_time() - start_time) * Double(timebase_info.numer) / Double(timebase_info.denom)
             }
             .frame(height: 750)
-            .border(outline)
             .background(frame_bg)
+            .preferredColorScheme(.dark)
         
             HStack() {
                 VStack() { // button rows
@@ -204,7 +207,11 @@ struct ContentView: View {
                             //Text(String(format: "%.2fms", viewModel.elapsed / 1000000)).font(sfont) TODO: state problem
                             StatusText(String(format: "%.2f%%", viewModel.power() * master * 100))
                             StatusText("\(viewModel.frames)")
-                            StatusText("no")
+                            if settingsModel.olaEnabled {
+                                StatusText("yes", color: Color.green)
+                            } else {
+                                StatusText("no", color: Color.red)
+                            }
                             StatusText("xx/yy")
                             StatusText("nnn")
                         }
@@ -223,7 +230,7 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                         }
                         .sheet(isPresented: $showingSettings) {
-                            SettingsView(settingsModel: viewModel.settingsModel)
+                            SettingsView(settingsModel: settingsModel)
                         }
                         .foregroundColor(Color.white)
                     }

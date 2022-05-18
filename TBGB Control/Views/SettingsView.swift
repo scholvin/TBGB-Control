@@ -34,6 +34,8 @@ struct SettingsView: View {
             .frame(height: 200)
 
             Button(action: {
+                print("enabled=\(settingsModel.olaEnabled)")
+                settingsModel.update()
                 dismiss()
             }, label: {
                 Label("OK", systemImage: "checkmark")                    
@@ -45,7 +47,7 @@ struct SettingsView: View {
             Spacer()
         
         }
-        .foregroundColor(.black)
+        .preferredColorScheme(.dark)
     }
 }
 
