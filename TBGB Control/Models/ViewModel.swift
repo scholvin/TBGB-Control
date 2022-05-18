@@ -8,24 +8,32 @@
 import Foundation
 import SwiftUI
     
-class ViewModel: ObservableObject {
+@MainActor class ViewModel: ObservableObject {
     // this is the trigger to repaint the view, increment when ready
     @Published var frames = 0
     
     private var _animations: [Animation]
     private var _current_anim: Int = 0
     private var _current_scene: Int = 0
+    
+    private var _task: Task<Void, Error>?
         
     init() {
         // constructs all the animations
         let _mgr = AnimationManager()
         self._animations = _mgr.animations()
+        self._task = nil
     }
     
-    // change to a new animation
-    func change_animation(anim: Int)
-    {
+    // change to a new animation (task based)
+    func change_animation(anim: Int) {
         print("change_animation \(anim)")
+        
+        // cancel any existing timers
+        if _task != nil {
+            _task!.cancel()
+            _task = nil
+        }
         _current_scene = 0
         
         // pre-blackout?
@@ -33,26 +41,25 @@ class ViewModel: ObservableObject {
             _current_anim = 0
             frames += 1
         }
-
+        
         // paint first cel of new scene
         _current_anim = anim
         frames += 1
-
+        
         // if this is a multi-cel animation, schedule the next cel
         if _animations[_current_anim].cels.count > 1 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(_animations[_current_anim].cels[_current_scene].time_msec) / 1000.0)
-            {
+            _task = Task {
+                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * 1000000)
                 self.change_scene()
             }
         }
     }
-                           
-    // change the scene within the given animation (should be called only from timer)
+    
     func change_scene() {
         // go to the next cel and paint it, if there is a next cel
         print("change_scene \(_current_scene)")
         _current_scene += 1
-                
+        
         if _current_scene == _animations[_current_anim].cels.count {
             // we've gone past the last scene
             _current_scene = 0
@@ -62,14 +69,14 @@ class ViewModel: ObservableObject {
                 return
             }
         }
-       
+        
         frames += 1
         
         // check to see if we should schedule the next cel, because the animation could have changed while we were sleeping
         if _animations[_current_anim].cels.count > 1 {
             print("reposting")
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(_animations[_current_anim].cels[_current_scene].time_msec) / 1000.0)
-            {
+            _task = Task {
+                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * 1000000)
                 self.change_scene()
             }
         }

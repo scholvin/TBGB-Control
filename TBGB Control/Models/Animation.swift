@@ -136,12 +136,13 @@ class AnimationManager {
     }
     
     func impulse() -> Animation {
-        let IMPULSE_STEPS = 10
+        let IMPULSE_STEPS = 50
         let IMPULSE_DELAY = 5
         let IMPULSE_START = 1.0
         let IMPULSE_MID = 0.1
         let IMPULSE_END = 0.25
         
+        // for some reason in the original, this goes down from START to MID, and then back up to END
         var cels: [Cel] = []
         var mult = IMPULSE_START
         while mult > IMPULSE_MID {
@@ -151,12 +152,13 @@ class AnimationManager {
             cels.append(cel)
             mult -= (IMPULSE_START-IMPULSE_MID) / Double(IMPULSE_STEPS)
         }
-        while mult > IMPULSE_END {
+        // also in the original, it comes back up in half as many steps as it went down
+        while mult < IMPULSE_END {
             let g = Grid(color: Globals.mod_color(color: TBGB.INCANDESCENT, mult: mult))
             var cel = Cel(grid: g)
             cel.time_msec = IMPULSE_DELAY
             cels.append(cel)
-            mult -= (IMPULSE_MID-IMPULSE_END) / Double(IMPULSE_STEPS)
+            mult += (IMPULSE_END-IMPULSE_MID) / Double(IMPULSE_STEPS / 2)
         }
         
         return Animation(cels: cels, name: "impulse", loop: false)
