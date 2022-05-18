@@ -28,6 +28,8 @@ struct TBGB {
     static let GREEN = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
     static let BLUE = CGColor(red: 0, green: 0, blue: 1, alpha: 1)
     static let PURPLE = CGColor(red: 0.5, green: 0, blue: 0.5, alpha: 1)
+    // legacy
+    static let GREG = CGColor(red: 1, green: 115.0/255.0, blue: 0, alpha: 1)
     
     // custom blend to make the LED's look more like incandescent bulbs
     static let INCANDESCENT = CGColor(red: 1, green: 144.0/255.0, blue: 32.0/255.0, alpha: 1)

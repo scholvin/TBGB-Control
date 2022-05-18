@@ -54,8 +54,13 @@ class AnimationManager {
         _animations.append(white25())
         _animations.append(white100())
         _animations.append(impulse())
+        _animations.append(zero_to_full(color: TBGB.INCANDESCENT, oscillate: false, name: "0 to 100", loop: true))
         _animations.append(topdown())
+        _animations.append(leftright())
         _animations.append(rainbow())
+        _animations.append(zero_to_full(color: TBGB.BLUE, oscillate: true, name: "osc blue", loop: true))
+        _animations.append(zero_to_full(color: TBGB.RED, oscillate: true, name: "osc red", loop: true))
+        _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
         
         _animations.append(hardwhite())
         //_animations.append(linetest())
@@ -95,7 +100,7 @@ class AnimationManager {
     }
     
     func topdown() -> Animation {
-        let delay = 75
+        let DELAY = 75
         var cels: [Cel] = []
         for z in 0..<TBGB.YMAX {
             var cel = Cel(grid: Grid(color: TBGB.BLACK))
@@ -104,7 +109,7 @@ class AnimationManager {
                     cel.grid[x, y] = TBGB.INCANDESCENT
                 }
             }
-            cel.time_msec = delay
+            cel.time_msec = DELAY
             cels.append(cel)            
         }
         return Animation(cels: cels, name: "top down", pre_blackout: true)
@@ -162,6 +167,49 @@ class AnimationManager {
         }
         
         return Animation(cels: cels, name: "impulse", loop: false)
+    }
+    
+    // this was "foo_to_full" in the original, but it always started at zero
+    func zero_to_full(color: CGColor, oscillate: Bool, name: String, loop: Bool) -> Animation {
+        let ZERO_TO_FULL_STEPS = 50
+        let ZERO_TO_FULL_DELAY = 20
+        
+        var cels: [Cel] = []
+        var mult = 0.0
+        while mult < 1.0 {
+            let g = Grid(color: Globals.mod_color(color: color, mult: mult))
+            var cel = Cel(grid: g)
+            cel.time_msec = ZERO_TO_FULL_DELAY
+            cels.append(cel)
+            mult += 1 / Double(ZERO_TO_FULL_STEPS)
+        }
+        if oscillate {
+            while mult > 0.0 {
+                let g = Grid(color: Globals.mod_color(color: color, mult: mult))
+                var cel = Cel(grid: g)
+                cel.time_msec = ZERO_TO_FULL_DELAY
+                cels.append(cel)
+                mult -= 1 / Double(ZERO_TO_FULL_STEPS)
+            }
+        }
+        
+        return Animation(cels: cels, name: name, loop: loop)
+    }
+    
+    func leftright() -> Animation {
+        let DELAY = 35
+        var cels: [Cel] = []
+        for z in 0..<TBGB.XMAX {
+            var cel = Cel(grid: Grid(color: TBGB.BLACK))
+            for x in 0...z {
+                for y in 0..<TBGB.YMAX {
+                    cel.grid[x, y] = TBGB.INCANDESCENT
+                }
+            }
+            cel.time_msec = DELAY
+            cels.append(cel)
+        }
+        return Animation(cels: cels, name: "left right", pre_blackout: true)
     }
     
     
