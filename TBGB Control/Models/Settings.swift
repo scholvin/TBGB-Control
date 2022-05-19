@@ -8,8 +8,15 @@
 import Foundation
 
 class Settings: ObservableObject {
-    var olaEnabled: Bool = false
-    var olaAddress: String = "192.168.0.100:9090"
+    var olaEnabled: Bool
+    var olaAddress: String
+    
+    init(olaEnabled: Bool, olaAddress: String) {
+        self.olaEnabled = olaEnabled
+        self.olaAddress = olaAddress
+        print("--> SETTINGS CTOR")
+    }
+    
     @Published var changed = 0
     
     func update()

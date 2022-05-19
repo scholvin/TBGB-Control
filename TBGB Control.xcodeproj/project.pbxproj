@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B9083CCD2836B9F700B1FB82 /* OLAManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9083CCC2836B9F700B1FB82 /* OLAManager.swift */; };
 		B921AB6E281EE13D007D83DC /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = B921AB6D281EE13D007D83DC /* Grid.swift */; };
 		B921AB70281EE4A1007D83DC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B921AB6F281EE4A1007D83DC /* Constants.swift */; };
 		B93B483F2810E40B0073FF6E /* TBGB_ControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B483E2810E40B0073FF6E /* TBGB_ControlApp.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B9083CCC2836B9F700B1FB82 /* OLAManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLAManager.swift; sourceTree = "<group>"; };
 		B921AB6D281EE13D007D83DC /* Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		B921AB6F281EE4A1007D83DC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		B93B483B2810E40B0073FF6E /* TBGB Control.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TBGB Control.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +164,7 @@
 				B9B2F9B1282332AA00291F08 /* Animation.swift */,
 				B9B2F9B32824157900291F08 /* Letters.swift */,
 				B999D777282A99C10002D0A3 /* Settings.swift */,
+				B9083CCC2836B9F700B1FB82 /* OLAManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -302,6 +305,7 @@
 				B9B2F9B42824157900291F08 /* Letters.swift in Sources */,
 				B9BE25FA281F83420071D995 /* SettingsView.swift in Sources */,
 				B93B483F2810E40B0073FF6E /* TBGB_ControlApp.swift in Sources */,
+				B9083CCD2836B9F700B1FB82 /* OLAManager.swift in Sources */,
 				B999D778282A99C10002D0A3 /* Settings.swift in Sources */,
 				B9B2F9B2282332AA00291F08 /* Animation.swift in Sources */,
 				B921AB6E281EE13D007D83DC /* Grid.swift in Sources */,

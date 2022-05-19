@@ -17,6 +17,11 @@ import SwiftUI
     private var _current_scene: Int = 0
     
     private var _task: Task<Void, Error>?
+    
+    private var _olamgr = OLAManager()
+    private var _settings: Settings?
+    
+    let MILLION: UInt64 = 1_000_000
         
     init() {
         // constructs all the animations
@@ -26,8 +31,11 @@ import SwiftUI
     }
     
     // change to a new animation (task based)
-    func change_animation(anim: Int) {
+    func change_animation(anim: Int, settings: Settings) {
         print("change_animation \(anim)")
+        
+        // a bit hacky - keep a copy of this guy here for the duration of this animation
+        _settings = settings
         
         // cancel any existing timers
         if _task != nil {
@@ -39,17 +47,17 @@ import SwiftUI
         // pre-blackout?
         if (_animations[anim].pre_blackout) {
             _current_anim = 0
-            frames += 1
+            render()
         }
         
         // paint first cel of new scene
         _current_anim = anim
-        frames += 1
+        render()
         
         // if this is a multi-cel animation, schedule the next cel
         if _animations[_current_anim].cels.count > 1 {
             _task = Task {
-                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * 1000000)
+                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * MILLION)
                 self.change_scene()
             }
         }
@@ -70,7 +78,7 @@ import SwiftUI
             }
         }
         
-        frames += 1
+        render()
         
         // check to see if we should schedule the next cel, because the animation could have changed while we were sleeping
         if _animations[_current_anim].cels.count > 1 {
@@ -108,5 +116,14 @@ import SwiftUI
     // return the power usage of the current cel
     func power() -> Double {
         return _animations[_current_anim].cels[_current_scene].power()
+    }
+    
+    func render()
+    {
+        if _settings != nil && _settings!.olaEnabled {
+            let universes = _olamgr.render(grid())
+            print(universes[0])
+        }
+        frames += 1
     }
 }

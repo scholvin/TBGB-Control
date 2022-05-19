@@ -10,7 +10,7 @@ import CoreFoundation
 
 struct ContentView: View {
     @EnvironmentObject var viewModel: ViewModel
-    @ObservedObject var settingsModel = Settings()
+    @EnvironmentObject var settingsModel: Settings
     
     // for settings dialog
     // https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-a-new-view-using-sheets
@@ -62,7 +62,9 @@ struct ContentView: View {
     @State private var master: Double = 1 // RGB multiplier
     
     init() {
-        mach_timebase_info(&timebase_info)
+        //mach_timebase_info(&timebase_info)
+        // surprising result: this gets called on every paint!
+        // print("VIEW CTOR WHAT")
     }
     
     var body: some View {
@@ -243,7 +245,7 @@ struct ContentView: View {
     }
     
     func tbgb(anim: Int) {
-        viewModel.change_animation(anim: anim)
+        viewModel.change_animation(anim: anim, settings: settingsModel)
     }
 }
 
@@ -252,5 +254,6 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .previewInterfaceOrientation(.landscapeLeft)
             .environmentObject(ViewModel())
+            .environmentObject(Settings(olaEnabled: false, olaAddress: "127.0.0.1:9090"))
     }
 }

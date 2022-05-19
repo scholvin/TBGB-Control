@@ -53,6 +53,6 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(settingsModel: Settings())
+        SettingsView(settingsModel: Settings(olaEnabled: false, olaAddress: "192.168.1.100:9090"))
     }
 }
