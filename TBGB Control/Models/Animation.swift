@@ -61,6 +61,7 @@ class AnimationManager {
         _animations.append(zero_to_full(color: TBGB.BLUE, oscillate: true, name: "osc blue", loop: true))
         _animations.append(zero_to_full(color: TBGB.RED, oscillate: true, name: "osc red", loop: true))
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
+        _animations.append(one_by_one()) // testing only
         
         _animations.append(hardwhite())
         //_animations.append(linetest())
@@ -212,5 +213,20 @@ class AnimationManager {
         return Animation(cels: cels, name: "left right", pre_blackout: true)
     }
     
-    
+    // this is just for testing the pixel mapping
+    func one_by_one() -> Animation {
+        let DELAY = 250
+        var cels: [Cel] = []
+        for y in 0..<TBGB.YMAX {
+            for x in 0..<TBGB.XMAX {
+                if Letters.has_pixel(x: x, y: y) {
+                    var cel = Cel(grid: Grid(color: TBGB.BLACK))
+                    cel.grid[x, y] = TBGB.WHITE
+                    cel.time_msec = DELAY
+                    cels.append(cel)
+                }
+            }
+        }
+        return Animation(cels: cels, name: "one by one", pre_blackout: true)
+    }
 }

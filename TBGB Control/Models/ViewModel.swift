@@ -21,7 +21,7 @@ import SwiftUI
     private var _olamgr = OLAManager()
     private var _settings: Settings?
     
-    let MILLION: UInt64 = 1_000_000
+    let NANOS_PER_MILLI: UInt64 = 1_000_000
         
     init() {
         // constructs all the animations
@@ -57,7 +57,7 @@ import SwiftUI
         // if this is a multi-cel animation, schedule the next cel
         if _animations[_current_anim].cels.count > 1 {
             _task = Task {
-                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * MILLION)
+                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * NANOS_PER_MILLI)
                 self.change_scene()
             }
         }
@@ -65,7 +65,7 @@ import SwiftUI
     
     func change_scene() {
         // go to the next cel and paint it, if there is a next cel
-        print("change_scene \(_current_scene)")
+        // print("change_scene \(_current_scene)")
         _current_scene += 1
         
         if _current_scene == _animations[_current_anim].cels.count {
@@ -73,7 +73,7 @@ import SwiftUI
             _current_scene = 0
             // do we keep animating?
             if !_animations[_current_anim].loop {
-                print("not a looper")
+                // print("not a looper")
                 return
             }
         }
@@ -82,9 +82,9 @@ import SwiftUI
         
         // check to see if we should schedule the next cel, because the animation could have changed while we were sleeping
         if _animations[_current_anim].cels.count > 1 {
-            print("reposting")
+            // print("reposting")
             _task = Task {
-                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * 1000000)
+                try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * NANOS_PER_MILLI)
                 self.change_scene()
             }
         }
@@ -121,8 +121,10 @@ import SwiftUI
     func render()
     {
         if _settings != nil && _settings!.olaEnabled {
-            let universes = _olamgr.render(grid())
-            print(universes[0])
+            let universes = _olamgr.render(grid: grid())
+            /* for i in 0...3 {
+                print(universes[i])
+            } */
         }
         frames += 1
     }

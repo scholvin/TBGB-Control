@@ -16,6 +16,7 @@ struct Grid {
         self.elements = Array(repeating: color, count: TBGB.YMAX * TBGB.XMAX)
     }
     
+    // return the color of the pixel at [x,y]
     subscript(x: Int, y: Int) -> CGColor? {
         get { elements[(y * TBGB.XMAX) + x] }
         set { elements[(y * TBGB.XMAX) + x] = newValue }

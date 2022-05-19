@@ -253,6 +253,7 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .previewInterfaceOrientation(.landscapeLeft)
+            .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(ViewModel())
             .environmentObject(Settings(olaEnabled: false, olaAddress: "127.0.0.1:9090"))
     }
