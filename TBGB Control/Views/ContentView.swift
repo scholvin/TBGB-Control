@@ -57,20 +57,18 @@ struct ContentView: View {
     let button_rows = 3
     let button_cols = 8
     
-    var timebase_info = mach_timebase_info(numer: 0, denom: 0)
-    @State private var elapsed: Double = 0 // TODO: state problem
+    private var _timebase_info = mach_timebase_info(numer: 0, denom: 0)
     @State private var master: Double = 1 // RGB multiplier
     
     init() {
-        //mach_timebase_info(&timebase_info)
+        mach_timebase_info(&_timebase_info)
         // surprising result: this gets called on every paint!
-        // print("VIEW CTOR WHAT")
     }
     
     var body: some View {
         VStack() {
             Canvas { context, size in
-                // let start_time = mach_absolute_time() TODO: state problem
+                let start_time: UInt64 = mach_absolute_time()
                 let xoff = CGFloat(size.width * margin)
                 let yoff = CGFloat(size.height * margin)
                 let dx = CGFloat((Float(size.width) * Float(1 - margin * 2) / Float(TBGB.XMAX - 1)))
@@ -163,9 +161,11 @@ struct ContentView: View {
                 }
                 b4_in_lower.closeSubpath()
                 context.stroke(b4_in_lower, with: .color(outline))
-                // TODO: state problem
-                // can't modify state during view update
-                // viewModel.elapsed = Double(mach_absolute_time() - start_time) * Double(timebase_info.numer) / Double(timebase_info.denom)
+                let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(_timebase_info.numer / _timebase_info.denom)
+                Task {
+                    // put this back on the main thread
+                    self.viewModel.update_view_stats(elapsed: elapsed)
+                }
             }
             .frame(height: 750)
             .background(frame_bg)
@@ -196,7 +196,6 @@ struct ContentView: View {
                     HStack() { // status area
                         VStack(alignment: .trailing) {
                             StatusText("animation:")
-                            // Text("render time:").font(sfont) TODO: state problem
                             StatusText("power:")
                             StatusText("frames:")
                             StatusText("live:")
@@ -206,7 +205,6 @@ struct ContentView: View {
                         .padding(5)
                         VStack(alignment: .leading) {
                             StatusText(viewModel.anim_current().padding(toLength: 15, withPad: " ", startingAt: 0))
-                            //Text(String(format: "%.2fms", viewModel.elapsed / 1000000)).font(sfont) TODO: state problem
                             StatusText(String(format: "%.2f%%", viewModel.power() * master * 100))
                             StatusText("\(viewModel.frames)")
                             if settingsModel.olaEnabled {
@@ -232,7 +230,9 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                         }
                         .sheet(isPresented: $showingSettings) {
-                            SettingsView(settingsModel: settingsModel)
+                            SettingsView(settingsModel: settingsModel,
+                                         http_render: viewModel.get_http_render_time(),
+                                         view_render: viewModel.get_view_render_time())
                         }
                         .foregroundColor(Color.white)
                     }

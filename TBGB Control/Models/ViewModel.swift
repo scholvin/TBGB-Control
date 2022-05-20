@@ -21,6 +21,12 @@ import SwiftUI
     private var _olamgr = OLAManager()
     private var _settings: Settings?
     
+    private var _http_render_elapsed: UInt64 = 0
+    private var _http_render_count: UInt64 = 0
+    
+    private var _view_render_elapsed: UInt64 = 0
+    private var _view_render_count: UInt64 = 0
+    
     let NANOS_PER_MILLI: UInt64 = 1_000_000
         
     init() {
@@ -118,14 +124,42 @@ import SwiftUI
         return _animations[_current_anim].cels[_current_scene].power()
     }
     
+    func get_http_render_time() -> String {
+        if _http_render_count > 0 {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            return formatter.string(from: NSNumber(value: _http_render_elapsed / _http_render_count / 1000))! + "µs"
+        }
+        return "--"
+    }
+    
+    func get_view_render_time() -> String {
+        if _view_render_count > 0 {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            return formatter.string(from: NSNumber(value: _view_render_elapsed / _view_render_count / 1000))! + "µs"
+        }
+        return "--"
+    }
+    
+    func update_view_stats(elapsed: UInt64) {
+        _view_render_elapsed += elapsed
+        _view_render_count += 1
+    }
+    
     func render()
     {
+        // update the letters via OLA
         if _settings != nil && _settings!.olaEnabled {
-            let universes = _olamgr.render(grid: grid())
-            /* for i in 0...3 {
+            let (universes, elapsed) = _olamgr.render(grid: grid())
+            _http_render_elapsed += elapsed
+            _http_render_count += 1
+            for i in 0...3 {
                 print(universes[i])
-            } */
+            }
         }
+        
+        // this updates the local view on the app
         frames += 1
     }
 }

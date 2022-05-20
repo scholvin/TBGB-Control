@@ -57,7 +57,7 @@ class OLAManager {
         }
     }
     
-    func render(grid: Grid) -> [String] {
+    func render(grid: Grid) -> ([String], UInt64) {
         /*
            We need to build the four HTTP POST bodies, one for each letter,
            based on the RGB values in the grid. The strings are of the format:
@@ -86,7 +86,7 @@ class OLAManager {
         
         var timebase_info = mach_timebase_info(numer: 0, denom: 0)
         mach_timebase_info(&timebase_info)
-        let start_time = mach_absolute_time()
+        let start_time: UInt64 = mach_absolute_time()
         
         var T1 = "u=0&d="
         for coord in pixlist_T1 {
@@ -112,9 +112,8 @@ class OLAManager {
             B4.append("\(Int(rgb![0]*255)),\(Int(rgb![1]*255)),\(Int(rgb![2]*255)),")
         }
         
-        let elapsed = Double(mach_absolute_time() - start_time) * Double(timebase_info.numer) / Double(timebase_info.denom)
-        print("elapsed: \(elapsed)ns")
+        let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(timebase_info.numer / timebase_info.denom)
         
-        return [T1, B2, G3, B4]
+        return ([T1, B2, G3, B4], elapsed)
     }
 }
