@@ -12,6 +12,9 @@ import SwiftUI
     // this is the trigger to repaint the view, increment when ready
     @Published var frames = 0
     
+    // RGB master dimmer multiplier
+    @Published var master: Double = 1
+    
     private var _animations: [Animation]
     private var _current_anim: Int = 0
     private var _current_scene: Int = 0
@@ -151,7 +154,7 @@ import SwiftUI
     {
         // update the letters via OLA
         if _settings != nil && _settings!.olaEnabled {
-            let (universes, elapsed) = _olamgr.render(grid: grid())
+            let (universes, elapsed) = _olamgr.render(grid: grid(), master: master)
             _http_render_elapsed += elapsed
             _http_render_count += 1
             for i in 0...3 {

@@ -15,6 +15,9 @@ class OLAManager {
     var pixlist_B4: [ (Int, Int) ]
     
     init() {
+        
+        // these data structures are so we can build the actual HTTP POST body strings
+        // quickly - see comment below
         self.pixlist_T1 = Array(repeating: (-1,-1), count: Letters.pixels_T)
         self.pixlist_B2 = Array(repeating: (-1,-1), count: Letters.pixels_B)
         self.pixlist_G3 = Array(repeating: (-1,-1), count: Letters.pixels_G)
@@ -57,7 +60,7 @@ class OLAManager {
         }
     }
     
-    func render(grid: Grid) -> ([String], UInt64) {
+    func render(grid: Grid, master: Double) -> ([String], UInt64) {
         /*
            We need to build the four HTTP POST bodies, one for each letter,
            based on the RGB values in the grid. The strings are of the format:
@@ -78,10 +81,6 @@ class OLAManager {
          are laid out in the data structures in Letters.pixmap_{T,B,G}. Since we need to assemble
          these strings very quickly, we will use the pixlist_{T,B,G} structures we built
          at construction of this object.
-         
-         I am worried about the time this will take. We may have to cache these in the Amination
-         objects, but then we'd lose the master brightness slider, or have to come up with some
-         other crafty way to cache the relevant data.
         */
         
         var timebase_info = mach_timebase_info(numer: 0, denom: 0)
@@ -91,25 +90,25 @@ class OLAManager {
         var T1 = "u=0&d="
         for coord in pixlist_T1 {
             let rgb = grid[coord.0, coord.1]!.components
-            T1.append("\(Int(rgb![0]*255)),\(Int(rgb![1]*255)),\(Int(rgb![2]*255)),")
+            T1.append("\(Int(rgb![0]*255*master)),\(Int(rgb![1]*255*master)),\(Int(rgb![2]*255*master)),")
         }
         
         var B2 = "u=1&d="
         for coord in pixlist_B2 {
             let rgb = grid[coord.0, coord.1]!.components
-            B2.append("\(Int(rgb![0]*255)),\(Int(rgb![1]*255)),\(Int(rgb![2]*255)),")
+            B2.append("\(Int(rgb![0]*255*master)),\(Int(rgb![1]*255*master)),\(Int(rgb![2]*255*master)),")
         }
         
         var G3 = "u=2&d="
         for coord in pixlist_G3 {
             let rgb = grid[coord.0, coord.1]!.components
-            G3.append("\(Int(rgb![0]*255)),\(Int(rgb![1]*255)),\(Int(rgb![2]*255)),")
+            G3.append("\(Int(rgb![0]*255*master)),\(Int(rgb![1]*255*master)),\(Int(rgb![2]*255*master)),")
         }
         
         var B4 = "u=3&d="
         for coord in pixlist_B4 {
             let rgb = grid[coord.0, coord.1]!.components
-            B4.append("\(Int(rgb![0]*255)),\(Int(rgb![1]*255)),\(Int(rgb![2]*255)),")
+            B4.append("\(Int(rgb![0]*255*master)),\(Int(rgb![1]*255*master)),\(Int(rgb![2]*255*master)),")
         }
         
         let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(timebase_info.numer / timebase_info.denom)

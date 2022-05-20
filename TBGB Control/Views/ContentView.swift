@@ -58,7 +58,6 @@ struct ContentView: View {
     let button_cols = 8
     
     private var _timebase_info = mach_timebase_info(numer: 0, denom: 0)
-    @State private var master: Double = 1 // RGB multiplier
     
     init() {
         mach_timebase_info(&_timebase_info)
@@ -78,7 +77,7 @@ struct ContentView: View {
                 for x in 0...TBGB.XMAX - 1 {
                     for y in 0...TBGB.YMAX - 1 {
                         if Letters.has_pixel(x: x, y: y) {
-                            let pixel = Globals.mod_color(color: viewModel.grid()[x, y]!, mult: master)
+                            let pixel = Globals.mod_color(color: viewModel.grid()[x, y]!, mult: viewModel.master)
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
                                                                 y: yoff + CGFloat(y) * dy - pdiam / 2,
                                                                 width: pdiam, height:pdiam)),
@@ -186,7 +185,6 @@ struct ContentView: View {
                                 .background(Color.gray.cornerRadius(8))
                                 .buttonStyle(AnimationButtonStyle()) // TODO: do this without a style, and only for the button
                                 .disabled(but >= viewModel.anim_count())
-
                             }
                         }
                        .padding(.leading)
@@ -205,7 +203,7 @@ struct ContentView: View {
                         .padding(5)
                         VStack(alignment: .leading) {
                             StatusText(viewModel.anim_current().padding(toLength: 15, withPad: " ", startingAt: 0))
-                            StatusText(String(format: "%.2f%%", viewModel.power() * master * 100))
+                            StatusText(String(format: "%.2f%%", viewModel.power() * viewModel.master * 100))
                             StatusText("\(viewModel.frames)")
                             if settingsModel.olaEnabled {
                                 StatusText("yes", color: Color.green)
@@ -218,8 +216,13 @@ struct ContentView: View {
                         .padding(5)
                     }
                     .border(outline)
-                    Slider(value: $master, in: 0...1)
-                    Text(String(format: "master: %d%%", Int(master * 100))).foregroundColor(Color.white)
+                    Slider(value: $viewModel.master, in: 0...1)
+                        .onChange(of: viewModel.master, perform: { change in
+                            Task {
+                                viewModel.render() // be sure to update the actual grid when we drag this guy
+                            }
+                        })
+                    Text(String(format: "master: %d%%", Int(viewModel.master * 100))).foregroundColor(Color.white)
                     HStack() {
                         Spacer()
                         Button(action: {
