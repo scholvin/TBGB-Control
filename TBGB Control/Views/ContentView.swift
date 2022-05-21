@@ -33,7 +33,7 @@ struct ContentView: View {
         private let sfont = Font
             .system(size: 14)
             .monospaced()
-        
+
         init(_ text: String, color: Color = Color.white) {
             self.text = text
             self.color = color
@@ -210,7 +210,7 @@ struct ContentView: View {
                             } else {
                                 StatusText("no", color: Color.red)
                             }
-                            StatusText("xx/yy")
+                            StatusText(viewModel.get_http_stats())
                             StatusText("nnn")
                         }
                         .padding(5)

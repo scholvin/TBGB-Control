@@ -23,9 +23,13 @@ import SwiftUI
     
     private var _olamgr = OLAManager()
     private var _settings: Settings?
+    private var _url: URL?
     
     private var _http_render_elapsed: UInt64 = 0
     private var _http_render_count: UInt64 = 0
+    
+    private var _http_request_count: UInt64 = 0
+    private var _http_request_ack: UInt64 = 0
     
     private var _view_render_elapsed: UInt64 = 0
     private var _view_render_count: UInt64 = 0
@@ -36,6 +40,7 @@ import SwiftUI
         // constructs all the animations
         let _mgr = AnimationManager()
         self._animations = _mgr.animations()
+        
         self._task = nil
     }
     
@@ -99,6 +104,12 @@ import SwiftUI
         }
     }
     
+    // if the URL changes in the Settings dialog, update it here
+    func update_url()  // TODO: call this from somewhere and test it!
+    {
+        _url = URL(string: "http://" + _settings!.olaAddress + "/set_dmx")
+    }
+    
     // return the name of the specified animation
     func anim_name(num: Int) -> String {
         if num < 0 || num >= _animations.count {
@@ -145,6 +156,10 @@ import SwiftUI
         return "--"
     }
     
+    func get_http_stats() -> String {
+        return String(_http_request_count) + "/" + String(_http_request_ack)
+    }
+    
     func update_view_stats(elapsed: UInt64) {
         _view_render_elapsed += elapsed
         _view_render_count += 1
@@ -152,14 +167,51 @@ import SwiftUI
     
     func render()
     {
-        // update the letters via OLA
+        // update the letters via HTTP POST to OLA
         if _settings != nil && _settings!.olaEnabled {
-            let (universes, elapsed) = _olamgr.render(grid: grid(), master: master)
+            
+            // for timing
+            var timebase_info = mach_timebase_info(numer: 0, denom: 0)
+            mach_timebase_info(&timebase_info)
+            let start_time: UInt64 = mach_absolute_time()
+            
+            // this guy was taking around 400µs
+            let universes = _olamgr.render(grid: grid(), master: master)            
+            
+            if _url == nil {
+                _url = URL(string: "http://" + _settings!.olaAddress + "/set_dmx")
+            }
+            
+            // something is slow in here
+            for i in 0...3 {
+                var request = URLRequest(url: _url!)
+                request.httpMethod = "POST"
+                request.httpBody = universes[i].data(using: String.Encoding.utf8)
+                _http_request_count += 1
+
+                // create a dataTask, which includes a closure to process the response
+                let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                    // Check for Error
+                    if let error = error {
+                        print("Error took place \(error)")
+                        return
+                    }
+                    
+                    // Convert HTTP Response Data to a String
+                    if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                        // print("response: \(dataString)")
+                        if dataString == "ok" {
+                            self._http_request_ack += 1 // TODO: update the view when these change (if we can do it without too much CPU)
+                            // TODO: track latency
+                        }
+                    }
+                }
+                // launch the task (async)
+                task.resume()
+            }
+            let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(timebase_info.numer / timebase_info.denom)
             _http_render_elapsed += elapsed
             _http_render_count += 1
-            for i in 0...3 {
-                print(universes[i])
-            }
         }
         
         // this updates the local view on the app
