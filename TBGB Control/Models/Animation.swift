@@ -61,9 +61,14 @@ class AnimationManager {
         _animations.append(zero_to_full(color: TBGB.BLUE, oscillate: true, name: "osc blue", loop: true))
         _animations.append(zero_to_full(color: TBGB.RED, oscillate: true, name: "osc red", loop: true))
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
-        _animations.append(one_by_one()) // testing only
-        
         _animations.append(hardwhite())
+        
+        // testing
+        _animations.append(one_by_one())
+        _animations.append(one_by_one_T1())
+        _animations.append(one_by_one_B2())
+        _animations.append(one_by_one_G3())
+        _animations.append(one_by_one_B4())
         //_animations.append(linetest())
        
     }
@@ -213,7 +218,7 @@ class AnimationManager {
         return Animation(cels: cels, name: "left right", pre_blackout: true)
     }
     
-    // this is just for testing the pixel mapping
+    // these are just for testing the pixel mapping
     func one_by_one() -> Animation {
         let DELAY = 250
         var cels: [Cel] = []
@@ -229,4 +234,69 @@ class AnimationManager {
         }
         return Animation(cels: cels, name: "one by one", pre_blackout: true)
     }
+    
+    func one_by_one_T1() -> Animation {
+        let DELAY = 250
+        var cels: [Cel] = []
+        for y in 0..<TBGB.YMAX {
+            for x in TBGB.T1_START..<(TBGB.T1_START+TBGB.LETTER_WIDTH) {
+                if Letters.has_pixel(x: x, y: y) {
+                    var cel = Cel(grid: Grid(color: TBGB.BLACK))
+                    cel.grid[x, y] = TBGB.WHITE
+                    cel.time_msec = DELAY
+                    cels.append(cel)
+                }
+            }
+        }
+        return Animation(cels: cels, name: "T1 1by1", pre_blackout: true)
+    }
+    
+    func one_by_one_B2() -> Animation {
+        let DELAY = 250
+        var cels: [Cel] = []
+        for y in 0..<TBGB.YMAX {
+            for x in TBGB.B2_START..<(TBGB.B2_START+TBGB.LETTER_WIDTH) {
+                if Letters.has_pixel(x: x, y: y) {
+                    var cel = Cel(grid: Grid(color: TBGB.BLACK))
+                    cel.grid[x, y] = TBGB.WHITE
+                    cel.time_msec = DELAY
+                    cels.append(cel)
+                }
+            }
+        }
+        return Animation(cels: cels, name: "B2 1by1", pre_blackout: true)
+    }
+    
+    func one_by_one_G3() -> Animation {
+        let DELAY = 250
+        var cels: [Cel] = []
+        for y in 0..<TBGB.YMAX {
+            for x in TBGB.G3_START..<(TBGB.G3_START+TBGB.LETTER_WIDTH) {
+                if Letters.has_pixel(x: x, y: y) {
+                    var cel = Cel(grid: Grid(color: TBGB.BLACK))
+                    cel.grid[x, y] = TBGB.WHITE
+                    cel.time_msec = DELAY
+                    cels.append(cel)
+                }
+            }
+        }
+        return Animation(cels: cels, name: "G3 1by1", pre_blackout: true)
+    }
+    
+    func one_by_one_B4() -> Animation {
+        let DELAY = 250
+        var cels: [Cel] = []
+        for y in 0..<TBGB.YMAX {
+            for x in TBGB.B4_START..<(TBGB.B4_START+TBGB.LETTER_WIDTH) {
+                if Letters.has_pixel(x: x, y: y) {
+                    var cel = Cel(grid: Grid(color: TBGB.BLACK))
+                    cel.grid[x, y] = TBGB.WHITE
+                    cel.time_msec = DELAY
+                    cels.append(cel)
+                }
+            }
+        }
+        return Animation(cels: cels, name: "B4 1by1", pre_blackout: true)
+    }
+    
 }
