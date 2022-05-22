@@ -211,7 +211,7 @@ struct ContentView: View {
                                 StatusText("no", color: Color.red)
                             }
                             StatusText(viewModel.get_http_stats())
-                            StatusText("nnn")
+                            StatusText(viewModel.get_http_latency())
                         }
                         .padding(5)
                     }
@@ -235,7 +235,8 @@ struct ContentView: View {
                         .sheet(isPresented: $showingSettings) {
                             SettingsView(settingsModel: settingsModel,
                                          http_render: viewModel.get_http_render_time(),
-                                         view_render: viewModel.get_view_render_time())
+                                         view_render: viewModel.get_view_render_time(),
+                                         http_error: viewModel.get_http_error())
                         }
                         .foregroundColor(Color.white)
                     }

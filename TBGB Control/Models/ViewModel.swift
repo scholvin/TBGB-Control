@@ -31,6 +31,11 @@ import SwiftUI
     private var _http_request_count: UInt64 = 0
     private var _http_request_ack: UInt64 = 0
     
+    private var _http_latency_elapsed: UInt64 = 0
+    private var _http_latency_count: UInt64 = 0
+    
+    private var _http_last_error: String = "--"
+    
     private var _view_render_elapsed: UInt64 = 0
     private var _view_render_count: UInt64 = 0
     
@@ -160,6 +165,19 @@ import SwiftUI
         return String(_http_request_count) + "/" + String(_http_request_ack)
     }
     
+    func get_http_latency() -> String {
+        if _http_latency_count > 0 {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            return formatter.string(from: NSNumber(value: _http_latency_elapsed / _http_latency_count / 1000000))! + "ms"
+        }
+        return "--"
+    }
+    
+    func get_http_error() -> String {
+        return _http_last_error
+    }
+    
     func update_view_stats(elapsed: UInt64) {
         _view_render_elapsed += elapsed
         _view_render_count += 1
@@ -182,6 +200,8 @@ import SwiftUI
                 _url = URL(string: "http://" + _settings!.olaAddress + "/set_dmx")
             }
             
+            var msg_starts: [UInt64] = Array(repeating: 0, count: 4)
+                        
             // something is slow in here
             for i in 0...3 {
                 var request = URLRequest(url: _url!)
@@ -191,22 +211,25 @@ import SwiftUI
 
                 // create a dataTask, which includes a closure to process the response
                 let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                    // TODO: update the view when these closure values change (if we can do it without too much CPU)
+                    let msg_elapsed: UInt64 = (mach_absolute_time() - msg_starts[i]) * UInt64(timebase_info.numer / timebase_info.denom)
+                    self._http_latency_elapsed += msg_elapsed
+                    self._http_latency_count += 1
                     // Check for Error
                     if let error = error {
-                        print("Error took place \(error)")
+                        self._http_last_error = error.localizedDescription
                         return
                     }
                     
                     // Convert HTTP Response Data to a String
                     if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                        // print("response: \(dataString)")
                         if dataString == "ok" {
-                            self._http_request_ack += 1 // TODO: update the view when these change (if we can do it without too much CPU)
-                            // TODO: track latency
+                            self._http_request_ack += 1
                         }
                     }
                 }
                 // launch the task (async)
+                msg_starts[i] = mach_absolute_time()
                 task.resume()
             }
             let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(timebase_info.numer / timebase_info.denom)
