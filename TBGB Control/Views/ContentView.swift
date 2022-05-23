@@ -227,6 +227,7 @@ struct ContentView: View {
                         Spacer()
                         Button(action: {
                             showingSettings.toggle()
+                            // TODO: validate settings
                         }) {
                             Image(systemName: "gearshape.fill")
                                 .imageScale(.large)

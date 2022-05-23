@@ -57,20 +57,25 @@ class AnimationManager {
         _animations.append(zero_to_full(color: TBGB.INCANDESCENT, oscillate: false, name: "0 to 100", loop: true))
         _animations.append(topdown())
         _animations.append(leftright())
+        _animations.append(flash())
+        _animations.append(tbgb(cumulative: true, name: "TBGB all"))
+        _animations.append(tbgb(cumulative: false, name: "TBGB each"))
+        _animations.append(inside_out())
+        _animations.append(outside_in())
         _animations.append(rainbow())
         _animations.append(zero_to_full(color: TBGB.BLUE, oscillate: true, name: "osc blue", loop: true))
         _animations.append(zero_to_full(color: TBGB.RED, oscillate: true, name: "osc red", loop: true))
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
         _animations.append(hardwhite())
         
-        // testing
+        /* test animations
         _animations.append(one_by_one())
         _animations.append(one_by_one_T1())
         _animations.append(one_by_one_B2())
         _animations.append(one_by_one_G3())
         _animations.append(one_by_one_B4())
-        //_animations.append(linetest())
-       
+        _animations.append(linetest())
+         */
     }
     
     // return all the animations we made
@@ -216,6 +221,100 @@ class AnimationManager {
             cels.append(cel)
         }
         return Animation(cels: cels, name: "left right", pre_blackout: true)
+    }
+    
+    func tbgb(cumulative: Bool, name: String) -> Animation {
+        let TBGB_DELAY = 250
+        var cels: [Cel] = []
+        var x0 = 0
+        for z in 0...3 {
+            var cel = (z == 0 || !cumulative ? Cel(grid: Grid(color: TBGB.BLACK)) : cels[z-1])
+            for x in x0..<(x0 + TBGB.LETTER_WIDTH) {
+                for y in 0..<TBGB.YMAX {
+                    cel.grid[x, y] = TBGB.INCANDESCENT
+                }
+            }
+            cel.time_msec = TBGB_DELAY
+            cels.append(cel)
+            x0 += TBGB.LETTER_WIDTH + 1
+        }
+        
+        if cumulative {
+            let cel = Cel(grid: Grid(color: TBGB.BLACK), time_msec: TBGB_DELAY / 2)
+            cels.append(cel)
+        }
+        
+        return Animation(cels: cels, name: name, pre_blackout: true)
+    }
+    
+    func flash() -> Animation {
+        let FLASH_DELAY = 250
+        var cels: [Cel] = [ Cel(grid: Grid(color: TBGB.INCANDESCENT), time_msec: FLASH_DELAY),
+                            Cel(grid: Grid(color: TBGB.BLACK), time_msec: FLASH_DELAY) ]
+        
+        return Animation(cels: cels, name: "flash")
+    }
+    
+    func inside_out() -> Animation {
+        let INSIDE_OUT_DELAY = 150
+        var cels: [Cel] = []
+        var x = 8
+        var y = 8
+        var w = 22
+        var h = 0
+        var done = false
+        
+        while !done {
+            var cel = cels.count == 0 ? Cel(grid: Grid(color: TBGB.BLACK), time_msec: INSIDE_OUT_DELAY) : cels[cels.count-1]
+            if h == 0 {
+                cel.grid.line(x0: x, y0: y, x1: x + w, y1: y, color: TBGB.INCANDESCENT)
+            } else {
+                cel.grid.line(x0: x, y0: y, x1: x + w, y1: y, color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x + w, y0: y, x1: x + w, y1: y + h,color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x + w, y0: y + h, x1: x, y1: y + h, color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x, y0: y + h, x1: x, y1: y, color: TBGB.INCANDESCENT)
+            }
+            x -= 1
+            y -= 1
+            w += 2
+            h += 2
+            if x + w >= TBGB.XMAX {
+                done = true
+            }
+            cels.append(cel)
+        }
+        
+        return Animation(cels: cels, name: "inside out", pre_blackout: true)
+    }
+    
+    func outside_in() -> Animation {
+        let OUTSIDE_IN_DELAY = 150
+        var cels: [Cel] = []
+        var x = 0
+        var y = 0
+        var w = TBGB.XMAX - 1
+        var h = TBGB.YMAX - 1
+        var done = false
+        
+        while !done {
+            var cel = cels.count == 0 ? Cel(grid: Grid(color: TBGB.BLACK), time_msec: OUTSIDE_IN_DELAY) : cels[cels.count-1]
+            if h <= 0 {
+                cel.grid.line(x0: x, y0: y, x1: x + w, y1: y, color: TBGB.INCANDESCENT)
+                done = true
+            } else {
+                cel.grid.line(x0: x, y0: y, x1: x + w, y1: y, color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x + w, y0: y, x1: x + w, y1: y + h,color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x + w, y0: y + h, x1: x, y1: y + h, color: TBGB.INCANDESCENT)
+                cel.grid.line(x0: x, y0: y + h, x1: x, y1: y, color: TBGB.INCANDESCENT)
+            }
+            x += 1
+            y += 1
+            w -= 2
+            h -= 2
+            cels.append(cel)
+        }
+        
+        return Animation(cels: cels, name: "outside in", pre_blackout: true)
     }
     
     // these are just for testing the pixel mapping
