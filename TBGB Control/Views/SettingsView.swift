@@ -17,6 +17,7 @@ struct SettingsView: View {
     var http_render: String
     var view_render: String
     var http_error: String
+    var build_date: Date
     
     var body: some View {
         VStack() {
@@ -50,8 +51,15 @@ struct SettingsView: View {
                         Text(http_error)
                     }
                 }
+                Section(header: Text("Info")) {
+                    HStack() {
+                        Text("Build date")
+                        Spacer()
+                        Text(build_date.formatted())
+                    }
+                }
             }
-            .frame(height: 350)
+            .frame(height: 450)
 
             Button(action: {
                 print("enabled=\(settingsModel.olaEnabled)")
@@ -76,6 +84,7 @@ struct SettingsView_Previews: PreviewProvider {
         SettingsView(settingsModel: Settings(olaEnabled: false, olaAddress: "192.168.1.100:9090"),
                      http_render: "1,234µs",
                      view_render: "5,678µs",
-                     http_error: "--")
+                     http_error: "--",
+                     build_date: Date())
     }
 }

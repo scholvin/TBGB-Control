@@ -236,7 +236,8 @@ struct ContentView: View {
                             SettingsView(settingsModel: settingsModel,
                                          http_render: viewModel.get_http_render_time(),
                                          view_render: viewModel.get_view_render_time(),
-                                         http_error: viewModel.get_http_error())
+                                         http_error: viewModel.get_http_error(),
+                                         build_date: viewModel.get_build_date())
                         }
                         .foregroundColor(Color.white)
                     }

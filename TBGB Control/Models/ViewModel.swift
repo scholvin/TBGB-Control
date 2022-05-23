@@ -39,6 +39,8 @@ import SwiftUI
     private var _view_render_elapsed: UInt64 = 0
     private var _view_render_count: UInt64 = 0
     
+    private var _build_date: Date = Date.distantPast
+    
     let NANOS_PER_MILLI: UInt64 = 1_000_000
         
     init() {
@@ -47,6 +49,12 @@ import SwiftUI
         self._animations = _mgr.animations()
         
         self._task = nil
+        
+        // https://stackoverflow.com/questions/43750860/how-to-get-ios-app-archive-date-using-swift/43751276#43751276
+        if let executableURL = Bundle.main.executableURL,
+            let creation = (try? executableURL.resourceValues(forKeys: [.creationDateKey]))?.creationDate {
+            self._build_date = creation
+        }
     }
     
     // change to a new animation (task based)
@@ -176,6 +184,10 @@ import SwiftUI
     
     func get_http_error() -> String {
         return _http_last_error
+    }
+    
+    func get_build_date() -> Date {
+        return _build_date
     }
     
     func update_view_stats(elapsed: UInt64) {
