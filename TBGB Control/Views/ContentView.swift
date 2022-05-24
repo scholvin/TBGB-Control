@@ -57,6 +57,8 @@ struct ContentView: View {
     let button_rows = 3
     let button_cols = 8
     
+    @State private var _old_addr = ""
+    
     private var _timebase_info = mach_timebase_info(numer: 0, denom: 0)
     
     init() {
@@ -226,14 +228,18 @@ struct ContentView: View {
                     HStack() {
                         Spacer()
                         Button(action: {
+                            _old_addr = settingsModel.get_ola_addr()
                             showingSettings.toggle()
-                            // TODO: validate settings
                         }) {
                             Image(systemName: "gearshape.fill")
                                 .imageScale(.large)
                                 .foregroundColor(.white)
                         }
-                        .sheet(isPresented: $showingSettings) {
+                        .sheet(isPresented: $showingSettings,
+                               onDismiss: {
+                            if _old_addr != settingsModel.get_ola_addr() {
+                                viewModel.update_addr(new_addr: settingsModel.get_ola_addr())
+                            }}) {
                             SettingsView(settingsModel: settingsModel,
                                          http_render: viewModel.get_http_render_time(),
                                          view_render: viewModel.get_view_render_time(),
@@ -261,6 +267,8 @@ struct ContentView_Previews: PreviewProvider {
             .previewInterfaceOrientation(.landscapeLeft)
             .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(ViewModel())
-            .environmentObject(Settings(olaEnabled: false, olaAddress: "127.0.0.1:9090"))
+            .environmentObject(Settings(olaEnabled: false,
+                                        olaAddress: "127.0.0.1",
+                                        olaPort: "9000"))
     }
 }

@@ -26,12 +26,22 @@ struct SettingsView: View {
                 .padding(5)
 
             Form {
-                Section(header: Text("OLAD")) {
+                Section(header: Text("OLAD"),
+                        footer: Text(settingsModel.addressMsg).foregroundColor(.red)) {
                     Toggle("Active", isOn: $settingsModel.olaEnabled)
                     HStack() {
                         Text("IP")
                         Spacer()
-                        TextField("IP", text: $settingsModel.olaAddress).multilineTextAlignment(.trailing)
+                        TextField("IP", text: $settingsModel.olaAddress)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundColor(.blue)
+                    }
+                    HStack() {
+                        Text("Port")
+                        Spacer()
+                        TextField("Port", text: $settingsModel.olaPort)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundColor(.blue)
                     }
                 }
                 Section(header: Text("Statistics")) {
@@ -59,21 +69,19 @@ struct SettingsView: View {
                     }
                 }
             }
-            .frame(height: 450)
+            .frame(height: 520)
 
             Button(action: {
-                print("enabled=\(settingsModel.olaEnabled)")
-                settingsModel.update()
                 dismiss()
             }, label: {
                 Label("OK", systemImage: "checkmark")                    
             })
+            .disabled(!self.settingsModel.isValid)
             .frame(width: 125, height: 50)
-            .background(Color.blue.cornerRadius(8))
+            .background(self.settingsModel.isValid ? Color.blue.cornerRadius(8) : Color.gray.cornerRadius(8))
             .foregroundColor(.white)
 
             Spacer()
-        
         }
         .preferredColorScheme(.dark)
     }
@@ -81,7 +89,9 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(settingsModel: Settings(olaEnabled: false, olaAddress: "192.168.1.100:9090"),
+        SettingsView(settingsModel: Settings(olaEnabled: false,
+                                             olaAddress: "192.168.1.100",
+                                             olaPort: "9090"),
                      http_render: "1,234µs",
                      view_render: "5,678µs",
                      http_error: "--",

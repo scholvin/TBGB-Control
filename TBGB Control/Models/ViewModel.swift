@@ -118,9 +118,10 @@ import SwiftUI
     }
     
     // if the URL changes in the Settings dialog, update it here
-    func update_url()  // TODO: call this from somewhere and test it!
+    func update_addr(new_addr: String)
     {
-        _url = URL(string: "http://" + _settings!.olaAddress + "/set_dmx")
+        print("new address: \(new_addr)")
+        _url = URL(string: "http://" + new_addr + "/set_dmx")
     }
     
     // return the name of the specified animation
@@ -209,7 +210,7 @@ import SwiftUI
             let universes = _olamgr.render(grid: grid(), master: master)            
             
             if _url == nil {
-                _url = URL(string: "http://" + _settings!.olaAddress + "/set_dmx")
+                _url = URL(string: "http://" + _settings!.get_ola_addr() + "/set_dmx")
             }
             
             var msg_starts: [UInt64] = Array(repeating: 0, count: 4)
