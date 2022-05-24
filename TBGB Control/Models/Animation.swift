@@ -131,7 +131,7 @@ class AnimationManager {
     
     func rainbow() -> Animation {
         var cels: [Cel] = []
-        var c = TBGB.RAINBOW.count - 1
+        var c = 0
         
         for _ in 0..<TBGB.RAINBOW.count {
             var g = Grid(color: TBGB.BLACK)
