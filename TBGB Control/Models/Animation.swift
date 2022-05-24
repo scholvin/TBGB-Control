@@ -129,14 +129,13 @@ class AnimationManager {
         return Animation(cels: cels, name: "top down", pre_blackout: true)
     }
     
-    // TODO: make it appear to go NW -> SE
     func rainbow() -> Animation {
         var cels: [Cel] = []
-        var c = 0
+        var c = TBGB.RAINBOW.count - 1
         
         for _ in 0..<TBGB.RAINBOW.count {
             var g = Grid(color: TBGB.BLACK)
-            for x in 0..<(TBGB.XMAX + TBGB.YMAX - 2) {
+            for x in (0..<(TBGB.XMAX + TBGB.YMAX - 2)).reversed() {
                 g.line(x0: x, y0: 0, x1: 0, y1: x, color: TBGB.RAINBOW[c]);
                 c = (c + 1) % TBGB.RAINBOW.count
             }
