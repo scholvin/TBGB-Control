@@ -28,6 +28,7 @@ struct TBGB {
     static let GREEN = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
     static let BLUE = CGColor(red: 0, green: 0, blue: 1, alpha: 1)
     static let PURPLE = CGColor(red: 0.5, green: 0, blue: 0.5, alpha: 1)
+    static let DIM = CGColor(red: 20.0/255.0, green: 20.0/255.0, blue: 10.0/255.0, alpha: 1) // TODO: verify on frame
     // legacy
     static let GREG = CGColor(red: 1, green: 115.0/255.0, blue: 0, alpha: 1)
     

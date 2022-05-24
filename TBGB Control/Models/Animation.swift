@@ -68,6 +68,7 @@ class AnimationManager {
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
         _animations.append(rainbow())
         _animations.append(twinkle())
+        _animations.append(pregame())
         _animations.append(hardwhite())
         
         /* test animations
@@ -395,6 +396,48 @@ class AnimationManager {
         }
         
         return Animation(cels: cels, name: "outside in", pre_blackout: true)
+    }
+    
+    func pregame() -> Animation {
+        let PREGAME_NORMAL_DELAY = 10
+        let PREGAME_FLICKER_DELAY = 2
+        let PREGAME_STEPS = 100
+        let DEAD_PIX = [ (3, 6), (5, 14), (8, 0), (11, 1), (17, 3), (17, 4), (17, 5),
+            (30, 12), ( 32, 3), (36, 6), (37, 6) ]
+        let HOT_PIX = (38, 6)
+        let HOT_COLOR = TBGB.INCANDESCENT
+        let DEAD_COLUMN = 16
+        
+        var generator = SystemRandomNumberGenerator()
+        
+        var cels: [Cel] = []
+        for _ in 1...PREGAME_STEPS {
+            var g = Grid(color: TBGB.DIM)
+            var delay = PREGAME_NORMAL_DELAY
+            for y in 0..<TBGB.YMAX {
+                for x in 0..<TBGB.XMAX {
+                    if Letters.has_pixel(x: x, y: y) {
+                        if (x, y) == HOT_PIX {
+                            g[x, y] = HOT_COLOR
+                        } else if y == DEAD_COLUMN || DEAD_PIX.contains(where: { $0 == (x, y) }) {
+                            g[x, y] = TBGB.BLACK
+                        }
+                    }
+                }
+            }
+            // flicker the G once in a while
+            if Int.random(in: 1...1000, using: &generator) <= 20 {
+                delay = PREGAME_FLICKER_DELAY
+                for y in 0..<TBGB.YMAX {
+                    for x in TBGB.G3_START..<(TBGB.G3_START + TBGB.LETTER_WIDTH) {
+                        g[x, y] = TBGB.BLACK
+                    }
+                }
+            }
+            cels.append(Cel(grid: g, time_msec: delay))
+        }
+        
+        return Animation(cels: cels, name: "pregame")
     }
     
     // -----------------------------------------------------------------------
