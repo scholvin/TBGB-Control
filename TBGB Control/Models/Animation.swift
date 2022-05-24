@@ -61,11 +61,13 @@ class AnimationManager {
         _animations.append(tbgb(cumulative: true, name: "TBGB all"))
         _animations.append(tbgb(cumulative: false, name: "TBGB each"))
         _animations.append(inside_out())
-        _animations.append(outside_in())
-        _animations.append(rainbow())
+        _animations.append(outside_in())       
+        _animations.append(rotate(colors: [TBGB.RED, TBGB.GREEN, TBGB.BLUE], name: "osc RGB"))
         _animations.append(zero_to_full(color: TBGB.BLUE, oscillate: true, name: "osc blue", loop: true))
         _animations.append(zero_to_full(color: TBGB.RED, oscillate: true, name: "osc red", loop: true))
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
+        _animations.append(rainbow())
+        _animations.append(twinkle())
         _animations.append(hardwhite())
         
         /* test animations
@@ -83,7 +85,7 @@ class AnimationManager {
         return _animations
     }
     
-    // --------------------------
+    // -----------------------------------------------------------------------
     // individual animations below here
     
     func blackout() -> Animation {
@@ -126,15 +128,7 @@ class AnimationManager {
         return Animation(cels: cels, name: "top down", pre_blackout: true)
     }
     
-    func linetest() -> Animation {
-        var g = Grid(color: TBGB.BLACK)
-        g.line(x0: 0, y0: 0, x1: TBGB.XMAX-1, y1: TBGB.YMAX-1, color: TBGB.ORANGE)
-        g.line(x0: TBGB.XMAX-1, y0: 0, x1: 0, y1: TBGB.YMAX-1, color: TBGB.GREEN)
-        let cel = Cel(grid: g)
-        return Animation(cels: [cel], name: "linetest")
-    }
-    
-    // someday: make it appear to go NW -> SE
+    // TODO: make it appear to go NW -> SE
     func rainbow() -> Animation {
         var cels: [Cel] = []
         var c = 0
@@ -207,6 +201,92 @@ class AnimationManager {
         return Animation(cels: cels, name: name, loop: loop)
     }
     
+    // oscillate between the colors in the input list
+    func rotate(colors: [CGColor], name: String) -> Animation {
+        // self-defense
+        if colors.count <= 1 {
+            return hardwhite()
+        }
+        
+        let ROTATE_STEPS = 50
+        let ROTATE_DELAY = 10
+        var cels: [Cel] = []
+        
+        for i in 0..<colors.count {
+            // we transition from colors[i] to colors[i+1], with wraparound, obvs
+            let j = (i + 1) % colors.count
+            
+            var red = colors[i].components![0]
+            var green = colors[i].components![1]
+            var blue = colors[i].components![2]
+            let dr = (colors[j].components![0] - red) / Double(ROTATE_STEPS)
+            let dg = (colors[j].components![1] - green) / Double(ROTATE_STEPS)
+            let db = (colors[j].components![2] - blue) / Double(ROTATE_STEPS)
+            
+            for _ in 0..<ROTATE_STEPS {
+                let g = Grid(color: CGColor(red: red, green: green, blue: blue, alpha: 1))
+                let cel = Cel(grid: g, time_msec: ROTATE_DELAY)
+                cels.append(cel)
+                red += dr
+                green += dg
+                blue += db
+            }
+        }
+                
+        return Animation(cels: cels, name: name)
+    }
+    
+    func twinkle() -> Animation {
+        let TWINKLE_STARS = 150
+        let TWINKLE_STEPS = 200 // needs to be even
+        let TWINKLE_MIN_DELAY = 10
+        let TWINKLE_MAX_DELAY = 200
+        
+        var generator = SystemRandomNumberGenerator()
+        
+        var cels: [Cel] = []
+        
+        // seed the first cel with TWINKLE_STARS lit at random
+        var g0 = Grid(color: TBGB.BLACK)
+        for _ in 1...TWINKLE_STARS {
+            var x = -1, y = -1
+            repeat {
+                (x, y) = Letters.get_random_pixel()
+            } while g0[x, y] != TBGB.BLACK
+            g0[x, y] = TBGB.RAINBOW[Int.random(in: 0..<TBGB.RAINBOW.count, using: &generator)]
+        }
+        cels.append(Cel(grid: g0, time_msec: Int.random(in: TWINKLE_MIN_DELAY...TWINKLE_MAX_DELAY, using: &generator)))
+        
+        // now toggle pixels
+        for _ in 1...TWINKLE_STEPS / 2 {
+            let g_prev = cels[cels.count-1].grid
+            
+            // find one pixel that's on, and one that's off
+            var x_on = -1, y_on = -1, x_off = -1, y_off = -1
+            repeat {
+                (x_on, y_on) = Letters.get_random_pixel()
+            } while g_prev[x_on, y_on] == TBGB.BLACK
+            repeat {
+                (x_off, y_off) = Letters.get_random_pixel()
+            } while g_prev[x_off, y_off] != TBGB.BLACK
+            
+            // make that a new cel, swap colors, and append
+            var g_next = g_prev
+            g_next[x_off, y_off] = TBGB.RAINBOW[Int.random(in: 0..<TBGB.RAINBOW.count, using: &generator)]
+            g_next[x_on, y_on] = TBGB.BLACK
+            cels.append(Cel(grid: g_next, time_msec: Int.random(in: TWINKLE_MIN_DELAY...TWINKLE_MAX_DELAY, using: &generator)))
+        }
+        
+        // now just play the animation backward from STEPS/2 - 2 downto 1
+        // existing cels: 0 1 2 3 ... N
+        // new cels:                    N-1 N-2 ... 3 2 1
+        for i in (1...cels.count-2) {
+            cels.append(cels[TWINKLE_STEPS / 2 - i - 1])
+        }
+        
+        return Animation(cels: cels, name: "twinkle")
+    }
+    
     func leftright() -> Animation {
         let DELAY = 35
         var cels: [Cel] = []
@@ -249,7 +329,7 @@ class AnimationManager {
     
     func flash() -> Animation {
         let FLASH_DELAY = 250
-        var cels: [Cel] = [ Cel(grid: Grid(color: TBGB.INCANDESCENT), time_msec: FLASH_DELAY),
+        let cels: [Cel] = [ Cel(grid: Grid(color: TBGB.INCANDESCENT), time_msec: FLASH_DELAY),
                             Cel(grid: Grid(color: TBGB.BLACK), time_msec: FLASH_DELAY) ]
         
         return Animation(cels: cels, name: "flash")
@@ -317,7 +397,9 @@ class AnimationManager {
         return Animation(cels: cels, name: "outside in", pre_blackout: true)
     }
     
-    // these are just for testing the pixel mapping
+    // -----------------------------------------------------------------------
+    // animations below here are just for testing/debugging
+    
     func one_by_one() -> Animation {
         let DELAY = 250
         var cels: [Cel] = []
@@ -396,6 +478,14 @@ class AnimationManager {
             }
         }
         return Animation(cels: cels, name: "B4 1by1", pre_blackout: true)
+    }
+    
+    func linetest() -> Animation {
+        var g = Grid(color: TBGB.BLACK)
+        g.line(x0: 0, y0: 0, x1: TBGB.XMAX-1, y1: TBGB.YMAX-1, color: TBGB.ORANGE)
+        g.line(x0: TBGB.XMAX-1, y0: 0, x1: 0, y1: TBGB.YMAX-1, color: TBGB.GREEN)
+        let cel = Cel(grid: g)
+        return Animation(cels: [cel], name: "linetest")
     }
     
 }

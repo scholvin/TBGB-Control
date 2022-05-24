@@ -19,6 +19,17 @@ struct Letters {
         return bips[y][index] == "X"
     }
     
+    static var generator = SystemRandomNumberGenerator()
+    
+    static func get_random_pixel() -> (Int, Int) {
+        var x = -1, y = -1
+        repeat {
+            x = Int.random(in: 0..<TBGB.XMAX, using: &generator)
+            y = Int.random(in: 0..<TBGB.YMAX, using: &generator)
+        } while !has_pixel(x: x, y: y)
+        return (x, y)
+    }
+    
     // is there a pixel on the grid at location (x,y)? also, looks cool
     
     static let bips: [String] = [
