@@ -17,6 +17,20 @@ class Settings: ObservableObject {
     @Published var isValid = true
     @Published var addressMsg: String = ""
     
+    init() {
+        let defaults = UserDefaults.standard
+        self.olaEnabled = defaults.bool(forKey: "olaEnabled")
+        self.olaAddress = defaults.string(forKey: "olaAddress") ?? "192.168.1.100"
+        self.olaPort = defaults.string(forKey: "olaPort") ?? "9090"
+    }
+    
+    func persist_settings() {
+        let defaults = UserDefaults.standard
+        defaults.set(olaEnabled, forKey: "olaEnabled")
+        defaults.set(olaAddress, forKey: "olaAddress")
+        defaults.set(olaPort, forKey: "olaPort")
+    }
+    
     func get_ola_addr() -> String {
         return olaAddress + ":" + olaPort
     }

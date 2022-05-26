@@ -237,6 +237,7 @@ struct ContentView: View {
                         }
                         .sheet(isPresented: $showingSettings,
                                onDismiss: {
+                            settingsModel.persist_settings()
                             if _old_addr != settingsModel.get_ola_addr() {
                                 viewModel.update_addr(new_addr: settingsModel.get_ola_addr())
                             }}) {
@@ -267,8 +268,6 @@ struct ContentView_Previews: PreviewProvider {
             .previewInterfaceOrientation(.landscapeLeft)
             .previewDevice("iPad Pro (12.9-inch) (5th generation)")
             .environmentObject(ViewModel())
-            .environmentObject(Settings(olaEnabled: false,
-                                        olaAddress: "127.0.0.1",
-                                        olaPort: "9000"))
+            .environmentObject(Settings())
     }
 }

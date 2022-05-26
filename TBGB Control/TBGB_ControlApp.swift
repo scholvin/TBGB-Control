@@ -11,9 +11,7 @@ import SwiftUI
 struct TBGB_ControlApp: App {
     
     @StateObject var viewModel = ViewModel()
-    @StateObject var settings = Settings(olaEnabled: false, // TODO: persist these
-                                         olaAddress: "192.168.86.70",
-                                         olaPort: "9090")
+    @StateObject var settings = Settings()
     
     var body: some Scene {
         WindowGroup {
