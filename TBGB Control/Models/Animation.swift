@@ -74,6 +74,7 @@ class AnimationManager {
         _animations.append(zero_to_full(color: TBGB.GREG, oscillate: true, name: "osc yellow", loop: true))
         _animations.append(rainbow())
         _animations.append(twinkle())
+        _animations.append(colorwheel())
         _animations.append(pregame())
         _animations.append(hardwhite())
         
@@ -443,6 +444,38 @@ class AnimationManager {
         }
         
         return Animation(cels: cels, name: "pregame")
+    }
+    
+    func colorwheel() -> Animation {
+        let COLORWHEEL_DELAY = 20
+        var perimeter: [(Int, Int)] = []
+        for x in 0..<TBGB.XMAX {
+            perimeter.append((x, 0))
+        }
+        for y in 1..<TBGB.YMAX {
+            perimeter.append((TBGB.XMAX-1, y))
+        }
+        for x in (0..<TBGB.XMAX-1).reversed() {
+            perimeter.append((x, TBGB.YMAX-1))
+        }
+        for y in (1..<TBGB.YMAX-1).reversed() {
+            perimeter.append((0, y))
+        }
+        
+        var cels: [Cel] = []
+        let x0 = TBGB.XMAX / 2
+        let y0 = TBGB.YMAX / 2
+        let chunk = perimeter.count / TBGB.RAINBOW.count
+        
+        for p in 0..<perimeter.count {
+            var g = Grid(color: TBGB.BLACK)
+            for i in 0..<perimeter.count {
+                g.line(x0: x0, y0: y0, x1: perimeter[(p+i) % perimeter.count].0, y1: perimeter[(p+i) % perimeter.count].1, color: TBGB.RAINBOW[i / chunk])
+            }
+            cels.append(Cel(grid: g, time_msec: COLORWHEEL_DELAY))
+        }
+        
+        return Animation(cels: cels, name: "colorwheel")
     }
     
     // -----------------------------------------------------------------------
