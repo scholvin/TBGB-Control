@@ -15,11 +15,15 @@ import SwiftUI
     // RGB master dimmer multiplier
     @Published var master: Double = 1
     
+    // paint the screen every once in a while to catch up any stray acks
+    @Published var periodic = 0
+    
     private var _animations: [Animation]
     private var _current_anim: Int = 0
     private var _current_scene: Int = 0
     
-    private var _task: Task<Void, Error>?
+    private var _animation_task: Task<Void, Error>?
+    private var _periodic_task: Task<Void, Error>?
     
     private var _olamgr = OLAManager()
     private var _settings: Settings?
@@ -41,14 +45,20 @@ import SwiftUI
     
     private var _build_date: Date = Date.distantPast
     
-    let NANOS_PER_MILLI: UInt64 = 1_000_000
+    private let NANOS_PER_MILLI: UInt64 = 1_000_000
+    private let PERIODIC_TIMER_MS: UInt64 = 1000  // periodic catchup timer of 1sec, fine
         
     init() {
         // constructs all the animations
         let _mgr = AnimationManager()
         self._animations = _mgr.animations()
         
-        self._task = nil
+        self._animation_task = nil
+        
+        self._periodic_task = Task {
+            try await Task.sleep(nanoseconds: UInt64(PERIODIC_TIMER_MS * NANOS_PER_MILLI))
+            self.periodic_refresh()
+        }
         
         // https://stackoverflow.com/questions/43750860/how-to-get-ios-app-archive-date-using-swift/43751276#43751276
         if let executableURL = Bundle.main.executableURL,
@@ -65,9 +75,9 @@ import SwiftUI
         _settings = settings
         
         // cancel any existing timers
-        if _task != nil {
-            _task!.cancel()
-            _task = nil
+        if _animation_task != nil {
+            _animation_task!.cancel()
+            _animation_task = nil
         }
         _current_scene = 0
         
@@ -83,7 +93,7 @@ import SwiftUI
         
         // if this is a multi-cel animation, schedule the next cel
         if _animations[_current_anim].cels.count > 1 {
-            _task = Task {
+            _animation_task = Task {
                 try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * NANOS_PER_MILLI)
                 self.change_scene()
             }
@@ -97,12 +107,14 @@ import SwiftUI
         
         if _current_scene == _animations[_current_anim].cels.count {
             // we've gone past the last scene
-            _current_scene = 0
             // do we keep animating?
             if !_animations[_current_anim].loop {
                 // print("not a looper")
+                _current_scene -= 1 // go back to the last scene and stay there
                 return
             }
+            // loop around to first scene
+            _current_scene = 0
         }
         
         render()
@@ -110,16 +122,24 @@ import SwiftUI
         // check to see if we should schedule the next cel, because the animation could have changed while we were sleeping
         if _animations[_current_anim].cels.count > 1 {
             // print("reposting")
-            _task = Task {
+            _animation_task = Task {
                 try await Task.sleep(nanoseconds: UInt64(_animations[_current_anim].cels[_current_scene].time_msec) * NANOS_PER_MILLI)
                 self.change_scene()
             }
         }
     }
     
+    func periodic_refresh() {
+        // print("periodic refresh")
+        self._periodic_task = Task {
+            try await Task.sleep(nanoseconds: UInt64(PERIODIC_TIMER_MS * NANOS_PER_MILLI))
+            self.periodic_refresh()
+        }
+        periodic += 1
+    }
+    
     // if the URL changes in the Settings dialog, update it here
-    func update_addr(new_addr: String)
-    {
+    func update_addr(new_addr: String) {
         print("new address: \(new_addr)")
         _url = URL(string: "http://" + new_addr + "/set_dmx")
     }
@@ -224,7 +244,6 @@ import SwiftUI
 
                 // create a dataTask, which includes a closure to process the response
                 let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                    // TODO: update the view when these closure values change (if we can do it without too much CPU)
                     let msg_elapsed: UInt64 = (mach_absolute_time() - msg_starts[i]) * UInt64(timebase_info.numer / timebase_info.denom)
                     self._http_latency_elapsed += msg_elapsed
                     self._http_latency_count += 1

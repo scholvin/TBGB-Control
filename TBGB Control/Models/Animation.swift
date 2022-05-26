@@ -12,8 +12,14 @@ import SwiftUI
 // a Cel is a single grid of pixels and a time to display it (could be zero if it's the only scene in the animation)
 struct Cel {
     var grid: Grid
-    var time_msec: Int = 0
-    var cached_power: Double = -1 // TODO: make me private
+    var time_msec: Int
+    private var cached_power: Double
+    
+    init(grid: Grid, time_msec: Int = 0) {
+        self.grid = grid
+        self.time_msec = time_msec
+        self.cached_power = -1
+    }
     
     // this is a little mathy, so we'll calculate it only when its as
     mutating func power() -> Double {
