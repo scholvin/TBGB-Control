@@ -53,7 +53,7 @@ import SwiftUI
     private let NANOS_PER_MILLI: UInt64 = 1_000_000
     private let NANOS_PER_SEC: UInt64 = 1_000_000_000
     private let PERIODIC_TIMER_MS: UInt64 = 1000  // periodic catchup timer of 1sec, fine
-    private let CPUINFO_TIMER_SEC: UInt64 = 10
+    private let CPUINFO_TIMER_SEC: UInt64 = 20 // get CPU stats every 20 seconds
         
     init() {
         // constructs all the animations
