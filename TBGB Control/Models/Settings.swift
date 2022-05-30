@@ -24,6 +24,40 @@ class Settings: ObservableObject {
         self.olaAddress = defaults.string(forKey: "olaAddress") ?? "192.168.0.100"
         self.olaPort = defaults.string(forKey: "olaPort") ?? "9090"
         self.svcPort = defaults.string(forKey: "svcPort") ?? "5000"
+        
+        // initialize validation publishers
+        isAddressValidPublisher
+            // .print("address pub init") // note: these are noisy but helpful
+            .receive(on: RunLoop.main)
+            .map { valid in
+                valid ? "" : "Invalid IP address"
+            }
+            .assign(to: \.addressMsg, on: self)
+            .store(in: &cancellableSet)
+        
+        isOlaPortValidPublisher
+            // .print("ola port pub init")
+            .receive(on: RunLoop.main)
+            .map { valid in
+                valid ? "" : "Invalid OLA port"
+            }
+            .assign(to: \.addressMsg, on: self)
+            .store(in: &cancellableSet)
+        
+        isSvcPortValidPublisher
+            // .print("svc port pub init")
+            .receive(on: RunLoop.main)
+            .map { valid in
+                valid ? "" : "Invalid svc port"
+            }
+            .assign(to: \.addressMsg, on: self)
+            .store(in: &cancellableSet)
+        
+        isFormValidPublisher
+            // .print("form pub init")
+            .receive(on: RunLoop.main)
+            .assign(to: \.isValid, on: self)
+            .store(in: &cancellableSet)
     }
     
     func persist_settings() {
@@ -45,9 +79,10 @@ class Settings: ObservableObject {
     private var cancellableSet: Set<AnyCancellable> = []
     
     // https://peterfriese.dev/posts/swift-combine-love/
-    // TODO: something in the delta where I added cpuinfo broke these :-(
+
     private var isAddressValidPublisher: AnyPublisher<Bool, Never> {
         $olaAddress
+            // .print("address pub")
             .debounce(for: 0.8, scheduler: RunLoop.main)
             .removeDuplicates()
             .map { input in
@@ -61,6 +96,7 @@ class Settings: ObservableObject {
     
     private var isOlaPortValidPublisher: AnyPublisher<Bool, Never> {
         $olaPort
+            // .print("ola port pub")
             .debounce(for: 0.8, scheduler: RunLoop.main)
             .removeDuplicates()
             .map { input in
@@ -74,6 +110,7 @@ class Settings: ObservableObject {
     
     private var isSvcPortValidPublisher: AnyPublisher<Bool, Never> {
         $svcPort
+            // .print("svc port pub")
             .debounce(for: 0.8, scheduler: RunLoop.main)
             .removeDuplicates()
             .map { input in
@@ -87,45 +124,10 @@ class Settings: ObservableObject {
     
     private var isFormValidPublisher: AnyPublisher<Bool, Never> {
         Publishers.CombineLatest3(isAddressValidPublisher, isOlaPortValidPublisher, isSvcPortValidPublisher)
+            // .print("combined pub")
             .map { addressIsValid, olaPortIsValid, svcPortIsValid in
                 return addressIsValid && olaPortIsValid && svcPortIsValid
             }
             .eraseToAnyPublisher()
-    }
-    
-    init(olaEnabled: Bool, olaAddress: String, olaPort: String, svcPort: String) {
-        self.olaEnabled = olaEnabled
-        self.olaAddress = olaAddress
-        self.olaPort = olaPort
-        self.svcPort = svcPort
-        
-        isAddressValidPublisher
-            .receive(on: RunLoop.main)
-            .map { valid in
-                valid ? "" : "Invalid IP address"
-            }
-            .assign(to: \.addressMsg, on: self)
-            .store(in: &cancellableSet)
-        
-        isOlaPortValidPublisher
-            .receive(on: RunLoop.main)
-            .map { valid in
-                valid ? "" : "Invalid OLA port"
-            }
-            .assign(to: \.addressMsg, on: self)
-            .store(in: &cancellableSet)
-        
-        isSvcPortValidPublisher
-            .receive(on: RunLoop.main)
-            .map { valid in
-                valid ? "" : "Invalid svc port"
-            }
-            .assign(to: \.addressMsg, on: self)
-            .store(in: &cancellableSet)
-        
-        isFormValidPublisher
-            .receive(on: RunLoop.main)
-            .assign(to: \.isValid, on: self)
-            .store(in: &cancellableSet)
     }
 }

@@ -114,10 +114,7 @@ struct SettingsView: View {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(settingsModel: Settings(olaEnabled: false,
-                                             olaAddress: "192.168.0.100",
-                                             olaPort: "9090",
-                                             svcPort: "5000"),
+        SettingsView(settingsModel: Settings(),
                      http_render: "1,234µs",
                      view_render: "5,678µs",
                      http_error: "--",
