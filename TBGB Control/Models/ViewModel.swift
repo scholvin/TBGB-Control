@@ -24,10 +24,12 @@ import SwiftUI
     
     private var _animation_task: Task<Void, Error>?
     private var _periodic_task: Task<Void, Error>?
+    private var _cpuinfo_task: Task<Void, Error>?
     
     private var _olamgr = OLAManager()
     private var _settings: Settings?
-    private var _url: URL?
+    private var _ola_url: URL?
+    private var _cpuinfo_url: URL?
     
     private var _http_render_elapsed: UInt64 = 0
     private var _http_render_count: UInt64 = 0
@@ -43,10 +45,15 @@ import SwiftUI
     private var _view_render_elapsed: UInt64 = 0
     private var _view_render_count: UInt64 = 0
     
+    private var _cpu_temp: String = "--"
+    private var _load_avg: String = "--"
+    private var _uptime: String = "--"
     private var _build_date: Date = Date.distantPast
     
     private let NANOS_PER_MILLI: UInt64 = 1_000_000
+    private let NANOS_PER_SEC: UInt64 = 1_000_000_000
     private let PERIODIC_TIMER_MS: UInt64 = 1000  // periodic catchup timer of 1sec, fine
+    private let CPUINFO_TIMER_SEC: UInt64 = 10
         
     init() {
         // constructs all the animations
@@ -56,8 +63,13 @@ import SwiftUI
         self._animation_task = nil
         
         self._periodic_task = Task {
-            try await Task.sleep(nanoseconds: UInt64(PERIODIC_TIMER_MS * NANOS_PER_MILLI))
+            try await Task.sleep(nanoseconds: PERIODIC_TIMER_MS * NANOS_PER_MILLI)
             self.periodic_refresh()
+        }
+        
+        self._cpuinfo_task = Task {
+            try await Task.sleep(nanoseconds: CPUINFO_TIMER_SEC * NANOS_PER_SEC)
+            self.fetch_cpuinfo()
         }
         
         // https://stackoverflow.com/questions/43750860/how-to-get-ios-app-archive-date-using-swift/43751276#43751276
@@ -132,16 +144,56 @@ import SwiftUI
     func periodic_refresh() {
         // print("periodic refresh")
         self._periodic_task = Task {
-            try await Task.sleep(nanoseconds: UInt64(PERIODIC_TIMER_MS * NANOS_PER_MILLI))
+            try await Task.sleep(nanoseconds: PERIODIC_TIMER_MS * NANOS_PER_MILLI)
             self.periodic_refresh()
         }
         periodic += 1
     }
     
-    // if the URL changes in the Settings dialog, update it here
-    func update_addr(new_addr: String) {
-        print("new address: \(new_addr)")
-        _url = URL(string: "http://" + new_addr + "/set_dmx")
+    func fetch_cpuinfo() {
+        if _settings != nil && _settings!.olaEnabled {
+            if _cpuinfo_url == nil {
+                _cpuinfo_url = URL(string: "http://" + _settings!.get_svc_addr() + "/cpuinfo")
+            }
+            var request = URLRequest(url: _cpuinfo_url!)
+            request.httpMethod = "GET"
+
+            // create a dataTask, which includes a closure to process the response
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                // Check for Error
+                if let error = error {
+                    self._http_last_error = error.localizedDescription
+                    return
+                }
+                
+                // parse JSON response
+                if let data = data {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
+                            self._cpu_temp = json["temperature"] ?? "?"
+                            self._load_avg = json["loadavg"] ?? "?"
+                            self._uptime = json["uptime"] ?? "?"
+                        }
+                    } catch let error {
+                        print(error)
+                    }
+                }
+            }
+            // launch the task (async)
+            task.resume()
+        }
+        
+        self._cpuinfo_task = Task {
+            try await Task.sleep(nanoseconds: CPUINFO_TIMER_SEC * NANOS_PER_SEC)
+            self.fetch_cpuinfo()
+        }
+    }
+    
+    // if the IP address changes in the Settings dialog, update it here
+    func update_addr(new_ola_addr: String, new_cpu_addr: String) {
+        print("update_addr")
+        _ola_url = URL(string: "http://" + new_ola_addr + "/set_dmx")
+        _cpuinfo_url = URL(string: "http://" + new_cpu_addr + "/cpuinfo")
     }
     
     // return the name of the specified animation
@@ -211,6 +263,18 @@ import SwiftUI
         return _build_date
     }
     
+    func get_cpu_temp() -> String {
+        return _cpu_temp + "ºC"
+    }
+    
+    func get_load_avg() -> String {
+        return _load_avg
+    }
+    
+    func get_uptime() -> String {
+        return _uptime
+    }
+    
     func update_view_stats(elapsed: UInt64) {
         _view_render_elapsed += elapsed
         _view_render_count += 1
@@ -229,15 +293,15 @@ import SwiftUI
             // this guy was taking around 400µs
             let universes = _olamgr.render(grid: grid(), master: master)            
             
-            if _url == nil {
-                _url = URL(string: "http://" + _settings!.get_ola_addr() + "/set_dmx")
+            if _ola_url == nil {
+                _ola_url = URL(string: "http://" + _settings!.get_ola_addr() + "/set_dmx")
             }
             
             var msg_starts: [UInt64] = Array(repeating: 0, count: 4)
                         
             // something is slow in here
             for i in 0...3 {
-                var request = URLRequest(url: _url!)
+                var request = URLRequest(url: _ola_url!)
                 request.httpMethod = "POST"
                 request.httpBody = universes[i].data(using: String.Encoding.utf8)
                 _http_request_count += 1
@@ -252,11 +316,12 @@ import SwiftUI
                         self._http_last_error = error.localizedDescription
                         return
                     }
-                    
                     // Convert HTTP Response Data to a String
                     if let data = data, let dataString = String(data: data, encoding: .utf8) {
                         if dataString == "ok" {
                             self._http_request_ack += 1
+                        } else {
+                            self._http_last_error = dataString
                         }
                     }
                 }

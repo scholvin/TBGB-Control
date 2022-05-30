@@ -18,6 +18,9 @@ struct SettingsView: View {
     var view_render: String
     var http_error: String
     var build_date: Date
+    var cpu_temp: String
+    var load_avg: String
+    var uptime: String
     
     var body: some View {
         VStack() {
@@ -26,20 +29,27 @@ struct SettingsView: View {
                 .padding(5)
 
             Form {
-                Section(header: Text("OLAD"),
+                Section(header: Text("Server"),
                         footer: Text(settingsModel.addressMsg).foregroundColor(.red)) {
                     Toggle("Active", isOn: $settingsModel.olaEnabled)
                     HStack() {
-                        Text("IP")
+                        Text("IP address")
                         Spacer()
                         TextField("IP", text: $settingsModel.olaAddress)
                             .multilineTextAlignment(.trailing)
                             .foregroundColor(.blue)
                     }
                     HStack() {
-                        Text("Port")
+                        Text("OLA port")
                         Spacer()
                         TextField("Port", text: $settingsModel.olaPort)
+                            .multilineTextAlignment(.trailing)
+                            .foregroundColor(.blue)
+                    }
+                    HStack() {
+                        Text("CPU info port")
+                        Spacer()
+                        TextField("Port", text: $settingsModel.svcPort)
                             .multilineTextAlignment(.trailing)
                             .foregroundColor(.blue)
                     }
@@ -63,13 +73,28 @@ struct SettingsView: View {
                 }
                 Section(header: Text("Info")) {
                     HStack() {
+                        Text("CPU temperature")
+                        Spacer()
+                        Text(cpu_temp)
+                    }
+                    HStack() {
+                        Text("Load average (1, 5, 15)")
+                        Spacer()
+                        Text(load_avg)
+                    }
+                    HStack() {
+                        Text("Uptime (HH:MM:SS)")
+                        Spacer()
+                        Text(uptime)
+                    }
+                    HStack() {
                         Text("Build date")
                         Spacer()
                         Text(build_date.formatted())
                     }
                 }
             }
-            .frame(height: 520)
+            .frame(height: 685)
 
             Button(action: {
                 dismiss()
@@ -90,11 +115,15 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView(settingsModel: Settings(olaEnabled: false,
-                                             olaAddress: "192.168.1.100",
-                                             olaPort: "9090"),
+                                             olaAddress: "192.168.0.100",
+                                             olaPort: "9090",
+                                             svcPort: "5000"),
                      http_render: "1,234µs",
                      view_render: "5,678µs",
                      http_error: "--",
-                     build_date: Date())
+                     build_date: Date(),
+                     cpu_temp: "45.6ºC",
+                     load_avg: "0.12 0.15 0.16",
+                     uptime: "01:23:45")
     }
 }

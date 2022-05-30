@@ -239,13 +239,17 @@ struct ContentView: View {
                                onDismiss: {
                             settingsModel.persist_settings()
                             if _old_addr != settingsModel.get_ola_addr() {
-                                viewModel.update_addr(new_addr: settingsModel.get_ola_addr())
+                                viewModel.update_addr(new_ola_addr: settingsModel.get_ola_addr(),
+                                                      new_cpu_addr: settingsModel.get_svc_addr())
                             }}) {
                             SettingsView(settingsModel: settingsModel,
                                          http_render: viewModel.get_http_render_time(),
                                          view_render: viewModel.get_view_render_time(),
                                          http_error: viewModel.get_http_error(),
-                                         build_date: viewModel.get_build_date())
+                                         build_date: viewModel.get_build_date(),
+                                         cpu_temp: viewModel.get_cpu_temp(),
+                                         load_avg: viewModel.get_load_avg(),
+                                         uptime: viewModel.get_uptime())
                         }
                         .foregroundColor(Color.white)
                     }
