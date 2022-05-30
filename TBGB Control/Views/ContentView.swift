@@ -80,10 +80,18 @@ struct ContentView: View {
                     for y in 0...TBGB.YMAX - 1 {
                         if Letters.has_pixel(x: x, y: y) {
                             let pixel = Globals.mod_color(color: viewModel.grid()[x, y]!, mult: viewModel.master)
+                            /*  the pixels can be repesented on the view as circles this way, though it takes a lot more local CPU to render them
                             context.fill(Path(ellipseIn: CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
                                                                 y: yoff + CGFloat(y) * dy - pdiam / 2,
                                                                 width: pdiam, height:pdiam)),
                                          with: .color(Color(pixel)))
+                             */
+                            // squares
+                            context.fill(Path(CGRect(x: xoff + CGFloat(x) * dx - pdiam / 2,
+                                                y: yoff + CGFloat(y) * dy - pdiam / 2,
+                                                width: pdiam, height:pdiam)),
+                                         with: .color(Color(pixel)))
+
                         }
                     }
                 }
