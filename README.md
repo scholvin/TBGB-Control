@@ -22,10 +22,11 @@ XXXXXXXXX XXXXXXXXX XXXXXXXXX XXXXXXXXX
 
 TBGB Control application for iPad
 
-This is a rewrite of the [original](https://github.com/scholvin/tbgb) TBBG control application for iPadOS. It's also my first ever Swift app, so be nice.
+This is a rewrite of the [original](https://github.com/scholvin/tbgb) TBGB control application for iPadOS. It's also my first ever Swift app, so be nice.
 
 Future enhancements:
 * better handling of network problems, server down, etc
-* monitor CPU temperature (needs server side work)
 * get olad /debug info
 * more animations
+
+Get your face melted [here](https://www.tinybitofgiantsblood.com)
