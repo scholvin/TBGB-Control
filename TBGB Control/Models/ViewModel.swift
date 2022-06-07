@@ -41,6 +41,7 @@ import SwiftUI
     private var _http_latency_count: UInt64 = 0
     
     private var _http_last_error: String = "--"
+    private var _http_last_error_time: Date = Date.distantPast
     
     private var _view_render_elapsed: UInt64 = 0
     private var _view_render_count: UInt64 = 0
@@ -163,6 +164,7 @@ import SwiftUI
                 // Check for Error
                 if let error = error {
                     self._http_last_error = error.localizedDescription
+                    self._http_last_error_time = Date.now
                     return
                 }
                 
@@ -257,6 +259,10 @@ import SwiftUI
     
     func get_http_error() -> String {
         return _http_last_error
+    }
+    
+    func get_http_error_time() -> Date {
+        return _http_last_error_time
     }
     
     func get_build_date() -> Date {

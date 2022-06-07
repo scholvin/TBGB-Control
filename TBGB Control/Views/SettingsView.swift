@@ -16,7 +16,8 @@ struct SettingsView: View {
     @State var settingsModel: Settings
     var http_render: String
     var view_render: String
-    var http_error: String
+    var http_error_msg: String
+    var http_error_time: Date
     var build_date: Date
     var cpu_temp: String
     var load_avg: String
@@ -66,9 +67,14 @@ struct SettingsView: View {
                         Text(view_render)
                     }
                     HStack() {
-                        Text("HTTP last error")
+                        Text("HTTP last error message")
                         Spacer()
-                        Text(http_error)
+                        Text(http_error_msg)
+                    }
+                    HStack() {
+                        Text("HTTP last error time")
+                        Spacer()
+                        Text(http_error_time == Date.distantPast ? "--" : http_error_time.formatted())
                     }
                 }
                 Section(header: Text("Info")) {
@@ -94,7 +100,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            .frame(height: 685)
+            .frame(height: 730)
 
             Button(action: {
                 dismiss()
@@ -117,7 +123,8 @@ struct SettingsView_Previews: PreviewProvider {
         SettingsView(settingsModel: Settings(),
                      http_render: "1,234µs",
                      view_render: "5,678µs",
-                     http_error: "--",
+                     http_error_msg: "--",
+                     http_error_time: Date(),
                      build_date: Date(),
                      cpu_temp: "45.6ºC",
                      load_avg: "0.12 0.15 0.16",
