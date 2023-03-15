@@ -70,7 +70,7 @@ import SwiftUI
         
         self._cpuinfo_task = Task {
             try await Task.sleep(nanoseconds: CPUINFO_TIMER_SEC * NANOS_PER_SEC)
-            self.fetch_cpuinfo()
+            await self.fetch_cpuinfo()
         }
         
         // https://stackoverflow.com/questions/43750860/how-to-get-ios-app-archive-date-using-swift/43751276#43751276
@@ -151,43 +151,33 @@ import SwiftUI
         periodic += 1
     }
     
-    func fetch_cpuinfo() {
+    // new async model comes from here
+    // https://stackoverflow.com/questions/75726709/how-to-resolve-warning-from-swift-main-actor-isolated-property-can-not-be-mutat
+    func fetch_cpuinfo() async {
         if _settings != nil && _settings!.olaEnabled {
             if _cpuinfo_url == nil {
                 _cpuinfo_url = URL(string: "http://" + _settings!.get_svc_addr() + "/cpuinfo")
             }
             var request = URLRequest(url: _cpuinfo_url!)
             request.httpMethod = "GET"
-
-            // create a dataTask, which includes a closure to process the response
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                // Check for Error
-                if let error = error {
-                    self._http_last_error = error.localizedDescription
-                    self._http_last_error_time = Date.now
-                    return
-                }
-                
+                        
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                // handle data and response
                 // parse JSON response
-                if let data = data {
-                    do {
-                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
-                            self._cpu_temp = json["temperature"] ?? "?"
-                            self._load_avg = json["loadavg"] ?? "?"
-                            self._uptime = json["uptime"] ?? "?"
-                        }
-                    } catch let error {
-                        print(error)
-                    }
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
+                    self._cpu_temp = json["temperature"] ?? "?"
+                    self._load_avg = json["loadavg"] ?? "?"
+                    self._uptime = json["uptime"] ?? "?"
                 }
+            } catch {
+                self._http_last_error = error.localizedDescription
+                self._http_last_error_time = Date.now
             }
-            // launch the task (async)
-            task.resume()
         }
-        
         self._cpuinfo_task = Task {
             try await Task.sleep(nanoseconds: CPUINFO_TIMER_SEC * NANOS_PER_SEC)
-            self.fetch_cpuinfo()
+            await self.fetch_cpuinfo()
         }
     }
     
@@ -311,25 +301,33 @@ import SwiftUI
                 request.httpMethod = "POST"
                 request.httpBody = universes[i].data(using: String.Encoding.utf8)
                 _http_request_count += 1
-
+                            
                 // create a dataTask, which includes a closure to process the response
                 let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-                    let msg_elapsed: UInt64 = (mach_absolute_time() - msg_starts[i]) * UInt64(timebase_info.numer / timebase_info.denom)
-                    self._http_latency_elapsed += msg_elapsed
-                    self._http_latency_count += 1
-                    // Check for Error
-                    if let error = error {
-                        self._http_last_error = error.localizedDescription
-                        return
-                    }
-                    // Convert HTTP Response Data to a String
-                    if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                        if dataString == "ok" {
-                            self._http_request_ack += 1
-                        } else {
-                            self._http_last_error = dataString
+                    // note: wanted to try to have this callback follow the same pattern I used above
+                    // for the fetch_cpuinfo() chain, but it required making all of these functions async
+                    // and, at the top level, I couldn't figure out how to make an async call from the
+                    // Button's handler that launches the new animation.
+                    DispatchQueue.main.async {
+                        let msg_elapsed: UInt64 = (mach_absolute_time() - msg_starts[i]) * UInt64(timebase_info.numer / timebase_info.denom)
+                        self._http_latency_elapsed += msg_elapsed
+                        self._http_latency_count += 1
+
+                        // Check for Error
+                        if let error = error {
+                            self._http_last_error = error.localizedDescription
+                            return
                         }
-                    }
+
+                        // Convert HTTP Response Data to a String
+                        if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                            if dataString == "ok" {
+                                self._http_request_ack += 1
+                            } else {
+                                self._http_last_error = dataString
+                            }
+                        }
+                   }
                 }
                 // launch the task (async)
                 msg_starts[i] = mach_absolute_time()
