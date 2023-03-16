@@ -186,7 +186,7 @@ struct ContentView: View {
                         HStack() {
                             ForEach(0..<button_cols, id: \.self) { col in
                                 let but = row * button_cols + col
-                                Button(action: { tbgb(anim: but) }) { // TODO: figure out how to make this an async call
+                                Button(action: { tbgb(anim: but) } ) { // TODO: figure out how to make this an async call?
                                     Text(viewModel.anim_name(num: but))
                                         .padding(EdgeInsets(top: 18, leading: 10, bottom: 18, trailing: 10))
                                 }

@@ -276,8 +276,7 @@ import SwiftUI
         _view_render_count += 1
     }
     
-    func render()
-    {
+    func render() {
         // update the letters via HTTP POST to OLA
         if _settings != nil && _settings!.olaEnabled {
             
@@ -301,7 +300,7 @@ import SwiftUI
                 request.httpMethod = "POST"
                 request.httpBody = universes[i].data(using: String.Encoding.utf8)
                 _http_request_count += 1
-                            
+                msg_starts[i] = mach_absolute_time()
                 // create a dataTask, which includes a closure to process the response
                 let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                     // note: wanted to try to have this callback follow the same pattern I used above
@@ -330,7 +329,6 @@ import SwiftUI
                    }
                 }
                 // launch the task (async)
-                msg_starts[i] = mach_absolute_time()
                 task.resume()
             }
             let elapsed: UInt64 = (mach_absolute_time() - start_time) * UInt64(timebase_info.numer / timebase_info.denom)
