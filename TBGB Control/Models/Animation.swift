@@ -77,6 +77,8 @@ class AnimationManager {
         _animations.append(colorwheel())
         _animations.append(pregame())
         _animations.append(hardwhite())
+        _animations.append(starfield())
+        _animations.append(_1975())
         
         /* test animations
         _animations.append(one_by_one())
@@ -476,6 +478,71 @@ class AnimationManager {
         }
         
         return Animation(cels: cels, name: "colorwheel")
+    }
+    
+    func starfield() -> Animation {
+        let STARFIELD_DELAY = 400
+        let STARFIELD_COUNT = 150
+        
+        var base_grid = Grid(color: TBGB.BLACK)
+        var generator = SystemRandomNumberGenerator()
+        for _ in 0..<STARFIELD_COUNT {
+            base_grid[Int.random(in: 0..<TBGB.XMAX, using: &generator), Int.random(in: 0..<TBGB.YMAX, using: &generator)] = TBGB.INCANDESCENT
+        }
+        var cels: [Cel] = []
+        
+        let LEFT = (8, 8)
+        let RIGHT = (30, 8)
+        for f in 0...8 {
+            var grid = base_grid
+            // for frame f, draw three black boxes starting at position bstart (wrapping around)
+            for i in 0...2 {
+                // draw a box at b distance from center
+                let b = (f + 6 + i) % 9
+                grid.line(x0: LEFT.0 - b, y0: LEFT.1 - b, x1: RIGHT.0 + b, y1: RIGHT.1 - b, color: TBGB.BLACK) // top
+                grid.line(x0: LEFT.0 - b, y0: LEFT.1 - b, x1: LEFT.0 - b, y1: LEFT.1 + b, color: TBGB.BLACK) // left
+                grid.line(x0: LEFT.0 - b, y0: LEFT.1 + b, x1: RIGHT.0 + b, y1: RIGHT.1 + b, color: TBGB.BLACK) // bottom
+                grid.line(x0: RIGHT.0 + b, y0: RIGHT.1 - b, x1: RIGHT.0 + b, y1: RIGHT.1 + b, color: TBGB.BLACK) // right
+                
+            }
+
+            cels.append(Cel(grid: grid, time_msec: STARFIELD_DELAY))
+        }
+        
+        return Animation(cels: cels, name: "starfield", pre_blackout: true)
+    }
+    
+    func _1975() -> Animation {
+        let ONE_LINES = [ (3, 0, 3, 16), (4, 0, 4, 16), (5, 0, 5, 16) ]
+        let NINE_LINES = [ (10, 0, 18, 0), (10, 1, 18, 1), (10, 2, 18, 2),
+                            (16, 3, 16, 16), (17, 3, 17, 16), (18, 3, 18, 16),
+                            (10, 3, 10, 9), (11, 3, 11, 9), (12, 3, 12, 9),
+                             (13, 7, 15, 7), (13, 8, 15, 8), (13, 9, 15, 9) ]
+        let SEVEN_LINES = [ (20, 0, 28, 0), (20, 1, 28, 1), (20, 2, 28, 2),
+                            (26, 7, 26, 16), (27, 7, 27, 17), (28, 7, 28, 17) ]
+        let FIVE_LINES = [ (30, 0, 38, 0), (30, 1, 38, 1), (30, 2, 38, 2),
+                           (30, 3, 30, 9), (31, 3, 31, 9), (32, 3, 32, 9),
+                           (33, 7, 38, 7), (33, 8, 38, 8), (33, 9, 38, 9),
+                           (36, 10, 36, 16), (37, 10, 37, 16), (38, 10, 38, 16),
+                           (30, 14, 35, 14), (30, 15, 35, 15), (30, 16, 35, 16) ]
+        
+        var grid = Grid(color: TBGB.BLACK)
+        for line in ONE_LINES {
+            grid.line(x0: line.0, y0: line.1, x1: line.2, y1: line.3, color: TBGB.INCANDESCENT)
+        }
+        for line in NINE_LINES {
+            grid.line(x0: line.0, y0: line.1, x1: line.2, y1: line.3, color: TBGB.RED)
+        }
+        for line in SEVEN_LINES {
+            grid.line(x0: line.0, y0: line.1, x1: line.2, y1: line.3, color: TBGB.INCANDESCENT)
+        }
+        for line in FIVE_LINES {
+            grid.line(x0: line.0, y0: line.1, x1: line.2, y1: line.3, color: TBGB.RED)
+        }
+        
+        var cels: [Cel] = []
+        cels.append(Cel(grid: grid))
+        return Animation(cels: cels, name: "1975")
     }
     
     // -----------------------------------------------------------------------
